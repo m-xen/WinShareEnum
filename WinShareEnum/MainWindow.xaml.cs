@@ -1031,7 +1031,10 @@ namespace WinShareEnum
             {
                 sb.Append(item.Path + "\t\t" + item.Comment + "\r\n");
             }
-            System.Windows.Clipboard.SetText(sb.ToString());
+            bool autoConvert = true;
+            System.Windows.DataObject data = new System.Windows.DataObject(System.Windows.DataFormats.UnicodeText, (Object)sb, autoConvert);
+            // Place the persisted data on the clipboard.
+            System.Windows.Clipboard.SetDataObject(data, true);
         }
 
         private void mi_version_Click(object sender, RoutedEventArgs e)
@@ -1196,7 +1199,7 @@ namespace WinShareEnum
             if(saveFileDialog_res.FileName != "")
             {
                 // Open the file
-                using (System.IO.StreamWriter fs = new System.IO.StreamWriter(saveFileDialog_res.FileName + ".txt", true))
+                using (System.IO.StreamWriter fs = new System.IO.StreamWriter(saveFileDialog_res.FileName, true))
                 {
                     // switch case for different saves
                     // Basically just used the code from copy to clipboard for this
@@ -1205,7 +1208,7 @@ namespace WinShareEnum
                         case "mi_saveResultsToFile":
                             foreach (dgItem item in lv_resultsList.Items)
                             {
-                                fs.WriteLine(item);
+                                fs.WriteLine(item.Path + "\t\t" + item.Comment + "\r\n");
                             }
                             break;
                         case "mi_saveAllSharesandPermsToFile":
