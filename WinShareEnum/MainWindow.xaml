@@ -185,16 +185,15 @@
                 <ColumnDefinition Width="1082*"/>
             </Grid.ColumnDefinitions>
             <TreeView x:Name="treeviewMain" HorizontalAlignment="Left" Margin="9.075,10,0,29" Width="330" SelectedItemChanged="treeviewMain_SelectedItemChanged" BorderBrush="LightGray" IsTabStop="False" Grid.Column="1"/>
-            <TextBox AcceptsReturn="False" ScrollViewer.VerticalScrollBarVisibility="Auto" ToolTip="If you want to auth locally, use the format .\username.&#x0a;Though it tries to grab the fully qualified domain name, sometimes (like over VPN) this fails.&#x0a;If possible use a user like relevant.domain.local\jonmurray" TabIndex="1" x:Name="tbUsername" TextChanged="tbUsername_TextChanged" GotFocus="tbUsername_GotFocus" Margin="0,59,21,0" HorizontalAlignment="Right" Width="184" Height="28" VerticalAlignment="Top" LostFocus="tbUsername_LostFocus" BorderBrush="LightGray" Grid.Column="1" />
-            <PasswordBox TabIndex="2" x:Name="tbPassword"  PasswordChanged="tbPassword_PasswordChanged" GotFocus="tbPassword_GotFocus" Margin="0,97,21,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Right" Width="141"  LostFocus="tbPassword_LostFocus" BorderBrush="LightGray" Grid.Column="1"/>
+            <TextBox AcceptsReturn="False" ScrollViewer.VerticalScrollBarVisibility="Auto" ToolTip="If you want to auth locally, use the format .\username.&#x0a;Though it tries to grab the fully qualified domain name, sometimes (like over VPN) this fails.&#x0a;If possible use a user like relevant.domain.local\jonmurray" TabIndex="1" x:Name="tbUsername" TextChanged="tbUsername_TextChanged" GotFocus="tbUsername_GotFocus" Margin="0,59,21,0" HorizontalAlignment="Right" Width="184" Height="28" VerticalAlignment="Top" LostFocus="tbUsername_LostFocus" BorderBrush="LightGray" Grid.Column="1" Text="Domain\Username" />
+            <PasswordBox TabIndex="2" x:Name="tbPassword"  PasswordChanged="tbPassword_PasswordChanged" GotFocus="tbPassword_GotFocus" Margin="0,97,21,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Right" Width="141"  LostFocus="tbPassword_LostFocus" BorderBrush="LightGray" Grid.Column="1" Password="Password"/>
 
 
-            <TextBox x:Name="tbIPRange" Height="24" Margin="0,25,21,0" TextWrapping="Wrap" Text="10.1.2.3-250" VerticalAlignment="Top" TextAlignment="Right"  HorizontalAlignment="Right"  Width="108" Grid.Column="1" TextChanged="tbIPRange_TextChanged"/>
+            <TextBox x:Name="tbIPRange" Height="24" Margin="0,25,21,0" TextWrapping="Wrap" Text="127.0.0.1" VerticalAlignment="Top" TextAlignment="Right"  HorizontalAlignment="Right"  Width="108" Grid.Column="1" TextChanged="tbIPRange_TextChanged"/>
 
 
             <Button x:Name="btnGO" Content="GO" Height="29" Margin="0,97,167,0" VerticalAlignment="Top" Click="btnGO_Click" HorizontalAlignment="Right" Width="38" Style="{StaticResource
-                {x:Static ToolBar.ButtonStyleKey}}" Background="{x:Null}" BorderBrush="Black" FontSize="11" FontWeight="Bold" Opacity="0.8" IsTabStop="False" Grid.Column="1">
-            </Button>
+                {x:Static ToolBar.ButtonStyleKey}}" BorderBrush="Black" FontSize="11" FontWeight="Bold" Opacity="0.8" IsTabStop="False" Grid.Column="1" Background="#FF46F009"/>
             <ProgressBar x:Name="pgbMain" Margin="371.075,0,21,10" Maximum="100" Visibility="Hidden" Height="14" VerticalAlignment="Bottom" Background="DarkGray" Foreground="#FFFF1C04" BorderThickness="0" Style="{DynamicResource ProgressBarStyle1}" Opacity="0.8" Grid.Column="1">
                 <ProgressBar.BorderBrush>
                     <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
@@ -205,7 +204,7 @@
 
             </ProgressBar>
             <ListBox x:Name="lbLog" Margin="371.075,0,21,29" ScrollViewer.VerticalScrollBarVisibility="Auto" Height="95" VerticalAlignment="Bottom" BorderBrush="LightGray" Grid.Column="1" IsTabStop="False"/>
-            <CheckBox x:Name="checkbox_Null"  Height="24" Margin="0,25,134,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="71" IsChecked="True" Checked="checkbox_Null_Checked" Unchecked="checkbox_Null_Unchecked" Grid.Column="1" IsTabStop="False">
+            <CheckBox x:Name="checkbox_Null"  Height="24" Margin="0,25,134,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="71" Checked="checkbox_Null_Checked" Unchecked="checkbox_Null_Unchecked" Grid.Column="1" IsTabStop="False">
                 <TextBlock FontSize="10" Height="33"><Run Text="Use NULL"/><LineBreak/><Run Text="Session"/></TextBlock>
             </CheckBox>
 

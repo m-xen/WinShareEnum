@@ -125,7 +125,7 @@ namespace WinShareEnum
             }
         }
 
-        #region misc GUI crap
+        #region misc GUI
 
         private void tbUsername_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -200,8 +200,8 @@ namespace WinShareEnum
             tbPassword.IsEnabled = false;
             USERNAME = "";
             PASSSWORD = "";
-            tbUsername.Text = "DOMAIN\\USER";
-            tbPassword.Password = "password";
+            tbUsername.Text = "Domain\\Username";
+            tbPassword.Password = "Password";
         }
 
         private void checkbox_Null_Unchecked(object sender, RoutedEventArgs e)
@@ -215,8 +215,10 @@ namespace WinShareEnum
             all_readable_shares = new ConcurrentDictionary<string, List<shareStruct>>();
             all_readable_files = new ConcurrentDictionary<string, Dictionary<string, List<string>>>();
             all_interesting_files = new ConcurrentBag<string>();
-            btnFindInterestingFiles.IsEnabled = false;
+            btnFindInterestingFiles.IsEnabled = false; //Disable the Find Interesting button on GUI reset
+            btnFindInterestingFiles.Background = Brushes.CadetBlue;
             btnGrepFiles.IsEnabled = false;
+            btnGrepFiles.Background = Brushes.CadetBlue;
             treeviewMain.Items.Clear();
             pgbMain.Value = 0;
             pgbMain.Maximum = 0;
@@ -494,7 +496,7 @@ namespace WinShareEnum
                     {
                         throw new Exception("Enter a Domain");
                     }
-                    else if (tbUsername.Text.ToLower() == "domain\\user")
+                    else if (tbUsername.Text.ToLower() == "domain\\username")
                     {
                         throw new Exception("Enter credentials");
                     }
@@ -606,7 +608,7 @@ namespace WinShareEnum
 
                 catch (OperationCanceledException)
                 {
-                    addLog("Threads dead, baby. Threads dead.", true);
+                    addLog("Threads Terminated.", true);
                     btn_Stop.Visibility = Visibility.Hidden;
                     btnGO.Visibility = Visibility.Visible;
                     pgbMain.Visibility = Visibility.Hidden;
@@ -654,7 +656,7 @@ namespace WinShareEnum
             catch (OperationCanceledException)
             {
 
-                addLog("Threads dead, baby. Threads dead.", true);
+                addLog("Threads Terminated.", true);
                 btn_Stop.Visibility = Visibility.Hidden;
                 btnGO.Visibility = Visibility.Visible;
                 btn_Stop.IsEnabled = true;
@@ -666,7 +668,7 @@ namespace WinShareEnum
 
                 if (ex.InnerException != null && ex.InnerException.Message != null && ex.InnerException.Message == "The operation was canceled.")
                 {
-                    addLog("Threads dead, baby. Threads dead.", true);
+                    addLog("Threads Terminated.", true);
                     btn_Stop.Visibility = Visibility.Hidden;
                     btnGO.Visibility = Visibility.Visible;
                     btn_Stop.IsEnabled = true;
@@ -720,11 +722,14 @@ namespace WinShareEnum
 
         private async void btFindInterestingFiles_Click(object sender, RoutedEventArgs e)
         {
-            btnFindInterestingFiles.IsEnabled = false;
-            btn_StopInteresting.IsEnabled = true;
-            btn_StopInteresting.Visibility = Visibility.Visible;
-            btnFindInterestingFiles.Visibility = Visibility.Hidden;
+            btnFindInterestingFiles.Visibility = Visibility.Hidden; //Hide the Find Interesting button
+            btnFindInterestingFiles.IsEnabled = false; //Disable the Find Interesting button on click
 
+            btnGrepFiles.IsEnabled = false; //Disable the Inspect Files button, to make sure both aren't run in parallel
+
+            btn_StopInteresting.Visibility = Visibility.Visible; //Show the Stop button
+            btn_StopInteresting.IsEnabled = true;
+            btn_StopInteresting.Background = Brushes.Red;
 
             try
             {
@@ -740,7 +745,7 @@ namespace WinShareEnum
                     }
                 }
 
-                pgbMain.Visibility = Visibility.Visible;
+                pgbMain.Visibility = Visibility.Visible; //Show the progress bar
 
                 pgbMain.Maximum = shareList.Count;
                 pgbMain.Value = 0;
@@ -753,27 +758,32 @@ namespace WinShareEnum
                          finalInteresting.Add(getInterstingFileList(item)));
                  });
 
-                pgbMain.Visibility = Visibility.Hidden;
                 finalInteresting = new ConcurrentBag<bool>();
 
                 addLog("Searching for interesting files complete.");
-                btnFindInterestingFiles.IsEnabled = true;
+                btn_StopInteresting.Visibility = Visibility.Hidden; //Hide the stop button
                 btn_StopInteresting.IsEnabled = false;
-                btn_StopInteresting.Visibility = Visibility.Hidden;
-                btnFindInterestingFiles.Visibility = Visibility.Visible;
+                btnFindInterestingFiles.Visibility = Visibility.Visible; //Show the Find Interesting button
+                btnFindInterestingFiles.IsEnabled = true;
+                btnGrepFiles.Visibility = Visibility.Visible; //Show the Inspect Files button
+                btnGrepFiles.IsEnabled = true;
+                pgbMain.Visibility = Visibility.Hidden; //Hide the progress bar
+
             }
 
             catch (OperationCanceledException)
             {
-                addLog("Threads dead, baby. Threads dead.", true);
+                addLog("Threads Terminated.", true);
                 //reset file dict
                 all_readable_files = new ConcurrentDictionary<string, Dictionary<string, List<string>>>();
 
-                btn_StopInteresting.Visibility = Visibility.Hidden;
-                btnFindInterestingFiles.Visibility = Visibility.Visible;
+                btn_StopInteresting.Visibility = Visibility.Hidden; //Hide the stop button
                 btn_StopInteresting.IsEnabled = false;
+                btnFindInterestingFiles.Visibility = Visibility.Visible; //Show the Find Interesting button
                 btnFindInterestingFiles.IsEnabled = true;
-                pgbMain.Visibility = Visibility.Hidden;
+                btnGrepFiles.Visibility = Visibility.Visible; //Show the Inspect Files button
+                btnGrepFiles.IsEnabled = true;
+                pgbMain.Visibility = Visibility.Hidden; //Hide the progress bar
                 return;
             }
 
@@ -782,20 +792,30 @@ namespace WinShareEnum
                 if (ex.InnerException != null && ex.InnerException.Message != null && ex.InnerException.Message == "The operation was canceled.")
                 {
 
-                    addLog("Threads dead, baby. Threads dead.", true);
+                    addLog("Threads Terminated.", true);
                     //reset file dict
                     all_readable_files = new ConcurrentDictionary<string, Dictionary<string, List<string>>>();
+
+                    btn_StopInteresting.Visibility = Visibility.Hidden; //Hide the stop button
+                    btn_StopInteresting.IsEnabled = false;
+                    btnFindInterestingFiles.Visibility = Visibility.Visible; //Show the Find Interesting button
                     btnFindInterestingFiles.IsEnabled = true;
-                    btn_StopInteresting.Visibility = Visibility.Hidden;
-                    btnFindInterestingFiles.Visibility = Visibility.Visible;
-                    btn_StopInteresting.IsEnabled = true;
-                    pgbMain.Visibility = Visibility.Hidden;
+                    btnGrepFiles.Visibility = Visibility.Visible; //Show the Inspect Files button
+                    btnGrepFiles.IsEnabled = true;
+                    pgbMain.Visibility = Visibility.Hidden; //Hide the progress bar
                     return;
 
                 }
                 else
                 {
-                    pgbMain.Visibility = Visibility.Hidden;
+                    btn_StopInteresting.Visibility = Visibility.Hidden; //Hide the stop button
+                    btn_StopInteresting.IsEnabled = false;
+                    btnFindInterestingFiles.Visibility = Visibility.Visible; //Show the Find Interesting button
+                    btnFindInterestingFiles.IsEnabled = true;
+                    btnGrepFiles.Visibility = Visibility.Visible; //Show the Inspect Files button
+                    btnGrepFiles.IsEnabled = true;
+                    pgbMain.Visibility = Visibility.Hidden; //Hide the progress bar
+
                     System.Windows.MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
 
                     if (logLevel < LOG_LEVEL.INFO)
@@ -808,15 +828,18 @@ namespace WinShareEnum
                     }
                 }
             }
-            btnFindInterestingFiles.IsEnabled = true;
         }
 
         private async void btnGrepFiles_Click(object sender, RoutedEventArgs e)
         {
-            btn_StopGrep.IsEnabled = true;
-            btn_StopGrep.Visibility = Visibility.Visible;
-            btnGrepFiles.Visibility = Visibility.Hidden;
+            btnGrepFiles.Visibility = Visibility.Hidden; //Hide the Inspect Files button
+            btnGrepFiles.IsEnabled = false;
 
+            btnFindInterestingFiles.IsEnabled = false; //Disable the Find Interesting button, to make sure both aren't run in parallel
+
+            btn_StopGrep.Visibility = Visibility.Visible; //Show the Stop button
+            btn_StopGrep.IsEnabled = true;
+            btn_StopGrep.Background = Brushes.Red;
 
             try
             {
@@ -830,7 +853,7 @@ namespace WinShareEnum
                     }
                 }
 
-                pgbMain.Visibility = Visibility.Visible;
+                pgbMain.Visibility = Visibility.Visible;  //Show the progress bar
 
                 pgbMain.Maximum = shareList.Count;
                 pgbMain.Value = 0;
@@ -843,24 +866,33 @@ namespace WinShareEnum
                         finalInteresting.Add(getFileContentsList(item)));
                 });
 
-                pgbMain.Visibility = Visibility.Hidden;
                 finalInteresting = new ConcurrentBag<bool>();
 
                 addLog("Searching file contents complete.");
+                btn_StopGrep.Visibility = Visibility.Hidden; //Hide the stop button
+                btn_StopGrep.IsEnabled = false;
+                btnGrepFiles.Visibility = Visibility.Visible; //Show the Inspect Files button
+                btnGrepFiles.IsEnabled = true;
+                btnFindInterestingFiles.Visibility = Visibility.Visible; //Show the Find Interesting button
+                btnFindInterestingFiles.IsEnabled = true;
+                pgbMain.Visibility = Visibility.Hidden; //Hide the progress bar
 
             }
 
             catch (OperationCanceledException)
             {
 
-                addLog("Threads dead, baby. Threads dead.", true);
+                addLog("Threads Terminated.", true);
                 //reset file dict
                 all_readable_files = new ConcurrentDictionary<string, Dictionary<string, List<string>>>();
                 //todo: change
-                btn_StopGrep.Visibility = Visibility.Hidden;
-                btnGrepFiles.Visibility = Visibility.Visible;
-                btn_StopGrep.IsEnabled = true;
-                pgbMain.Visibility = Visibility.Hidden;
+                btn_StopGrep.Visibility = Visibility.Hidden; //Hide the stop button
+                btn_StopGrep.IsEnabled = false;
+                btnGrepFiles.Visibility = Visibility.Visible; //Show the Inspect Files button
+                btnGrepFiles.IsEnabled = true;
+                btnFindInterestingFiles.Visibility = Visibility.Visible; //Show the Find Interesting button
+                btnFindInterestingFiles.IsEnabled = true;
+                pgbMain.Visibility = Visibility.Hidden; //Hide the progress bar
                 return;
             }
 
@@ -868,34 +900,42 @@ namespace WinShareEnum
             {
                 if (ex.InnerException != null && ex.InnerException.Message != null && ex.InnerException.Message == "The operation was canceled.")
                 {
-                    addLog("Threads dead, baby. Threads dead.", true);
+                    addLog("Threads Terminated.", true);
                     //reset file dict
                     all_readable_files = new ConcurrentDictionary<string, Dictionary<string, List<string>>>();
                     //todo: change
-                    btn_StopGrep.Visibility = Visibility.Hidden;
-                    btnGrepFiles.Visibility = Visibility.Visible;
-                    btn_StopGrep.IsEnabled = true;
-                    pgbMain.Visibility = Visibility.Hidden;
+                    btn_StopGrep.Visibility = Visibility.Hidden; //Hide the stop button
+                    btn_StopGrep.IsEnabled = false;
+                    btnGrepFiles.Visibility = Visibility.Visible; //Show the Inspect Files button
+                    btnGrepFiles.IsEnabled = true;
+                    btnFindInterestingFiles.Visibility = Visibility.Visible; //Show the Find Interesting button
+                    btnFindInterestingFiles.IsEnabled = true;
+                    pgbMain.Visibility = Visibility.Hidden; //Hide the progress bar
                     return;
 
                 }
-
-                pgbMain.Visibility = Visibility.Hidden;
-                System.Windows.MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-
-                if (logLevel < LOG_LEVEL.INFO)
-                {
-                    addLog("Bad exception " + ex.Message + ex.StackTrace);
-                }
                 else
                 {
-                    addLog(ex.Message);
+                    btn_StopGrep.Visibility = Visibility.Hidden; //Hide the stop button
+                    btn_StopGrep.IsEnabled = false;
+                    btnGrepFiles.Visibility = Visibility.Visible; //Show the Inspect Files button
+                    btnGrepFiles.IsEnabled = true;
+                    btnFindInterestingFiles.Visibility = Visibility.Visible; //Show the Find Interesting button
+                    btnFindInterestingFiles.IsEnabled = true;
+                    pgbMain.Visibility = Visibility.Hidden; //Hide the progress bar
+
+                    System.Windows.MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+
+                    if (logLevel < LOG_LEVEL.INFO)
+                    {
+                        addLog("Bad exception " + ex.Message + ex.StackTrace);
+                    }
+                    else
+                    {
+                        addLog(ex.Message);
+                    }
                 }
             }
-            btnGrepFiles.IsEnabled = true;
-            btn_StopGrep.IsEnabled = false;
-            btn_StopGrep.Visibility = Visibility.Hidden;
-            btnGrepFiles.Visibility = Visibility.Visible;
         }
 
         private void mi_copyAllSharesandPerms_Click(object sender, RoutedEventArgs e)
@@ -926,9 +966,18 @@ namespace WinShareEnum
             bool autoConvert = true;
             System.Windows.DataObject data = new System.Windows.DataObject(System.Windows.DataFormats.UnicodeText, (Object)sb, autoConvert);
             // Place the persisted data on the clipboard.
-            System.Windows.Clipboard.SetDataObject(data, true);
+            try
+            {
+                System.Windows.Clipboard.SetDataObject(data, true);
+            }
+            catch (Exception ex)
+            {
+                if (logLevel <= LOG_LEVEL.ERROR)
+                {
+                    addLog("Error copying to clipboard: " + ex.Message);
+                }
+            }
         }
-
         private void btn_Stop_Click(object sender, RoutedEventArgs e)
         {
             MessageBoxResult result = System.Windows.MessageBox.Show("Really Stop?", "Stop", MessageBoxButton.YesNo, MessageBoxImage.Question);
@@ -937,9 +986,15 @@ namespace WinShareEnum
             {
                 addLog("Stopping background threads...");
                 _cancellationToken.Cancel();
-                btn_Stop.IsEnabled = false;
-                btn_StopGrep.IsEnabled = false;
+                btn_StopInteresting.Visibility = Visibility.Hidden; //Hide the stop button
                 btn_StopInteresting.IsEnabled = false;
+                btnFindInterestingFiles.Visibility = Visibility.Visible; //Show the Find Interesting button
+                btnFindInterestingFiles.IsEnabled = true;
+                btn_StopGrep.Visibility = Visibility.Hidden; //Hide the stop button
+                btn_StopGrep.IsEnabled = false;
+                btnGrepFiles.Visibility = Visibility.Visible; //Show the Inspect Files button
+                btnGrepFiles.IsEnabled = true;
+                pgbMain.Visibility = Visibility.Hidden; //Hide the progress bar
             }
         }
 
@@ -992,7 +1047,17 @@ namespace WinShareEnum
             bool autoConvert = true;
             System.Windows.DataObject data = new System.Windows.DataObject(System.Windows.DataFormats.UnicodeText, (Object)sb, autoConvert);
             // Place the persisted data on the clipboard.
-            System.Windows.Clipboard.SetDataObject(data, true);
+            try
+            {
+                System.Windows.Clipboard.SetDataObject(data, true);
+            }
+            catch (Exception ex)
+            {
+                if (logLevel <= LOG_LEVEL.ERROR)
+                {
+                    addLog("Error copying to clipboard: " + ex.Message);
+                }
+            }
         }
 
         private void mi_copyEveryoneShares_Click(object sender, RoutedEventArgs e)
@@ -1034,7 +1099,17 @@ namespace WinShareEnum
             bool autoConvert = true;
             System.Windows.DataObject data = new System.Windows.DataObject(System.Windows.DataFormats.UnicodeText, (Object)sb, autoConvert);
             // Place the persisted data on the clipboard.
-            System.Windows.Clipboard.SetDataObject(data, true);
+            try
+            {
+                System.Windows.Clipboard.SetDataObject(data, true);
+            }
+            catch (Exception ex)
+            {
+                if (logLevel <= LOG_LEVEL.ERROR)
+                {
+                    addLog("Error copying to clipboard: " + ex.Message);
+                }
+            }
         }
 
         private void mi_version_Click(object sender, RoutedEventArgs e)
@@ -1176,7 +1251,6 @@ namespace WinShareEnum
 
             }
 
-
         }
 
         private void mi_SaveResultsToFile(object sender, RoutedEventArgs e)
@@ -1194,7 +1268,9 @@ namespace WinShareEnum
             // Get the file path
             SaveFileDialog saveFileDialog_res = new SaveFileDialog();
             saveFileDialog_res.Title = "Save Results to File";
-            saveFileDialog_res.ShowDialog();
+            saveFileDialog_res.DefaultExt = "txt";
+            saveFileDialog_res.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
+                saveFileDialog_res.ShowDialog();
 
             if(saveFileDialog_res.FileName != "")
             {
@@ -1261,9 +1337,7 @@ namespace WinShareEnum
                 }
             }
         }
-        
-
-
+ 
         #endregion
 
         #region core share enumeration

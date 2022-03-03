@@ -24,7 +24,7 @@ namespace WinShareEnum
                 case MainWindow.LOG_LEVEL.INFO:
                     rb_info.IsChecked = true;
                     break;
-          case MainWindow.LOG_LEVEL.DEBUG:
+                case MainWindow.LOG_LEVEL.DEBUG:
                     rb_debug.IsChecked = true;
                     break;
             }
