@@ -3,9 +3,9 @@ WinShareEnum
 
 Windows Share Enumerator
 
-download  https://github.com/nccgroup/WinShareEnum/raw/master/Info/WinShareEnum.exe
+download  https://github.com/m-xen/WinShareEnum/blob/master/Info/WinShareEnum.exe
 
-running against a range on my local (non-domain) network, with a few dummy shares. Please remember this is primarily designed for domain-ed / large networks:
+running against a range on my local (non-domain) network, with a few dummy shares. Please remember this is primarily designed for domain / large networks:
 
 ![winshareenum running](http://i.imgur.com/1RswJvA.png?1)
 
@@ -14,18 +14,15 @@ options:
 
   
 A few things:
-	
-		
-		
+
+
 		Adding the username as ".\<username>" will authenticate locally instead of on the domain, ie. .\guest will attempt to auth to every server locally as the guest account instead of using <domain>\guest
 		
 		multiple IP ranges are supported (ie. 10.0-255.0.0-242 will enumerate the an unnecessarily large amount of IPs)
 
 		Windows shares (particularly file searching) are slow. That's just how it is, have patience..
 
-		The app needs .NET runtime 4.5 to run.
-			Download 4.0 from  http://www.microsoft.com/en-gb/download/details.aspx?id=17718
-			Download 4.5 from  http://www.microsoft.com/en-gb/download/details.aspx?id=30653
+		The app needs .NET runtime 4.8 to run.
 
 		clicking download a file will download it to the desktop, this WILL overwrite.
 		shares coloured red are readable by everyone, blue are readable by the current user.
@@ -68,6 +65,3 @@ Example share copy output from home PC:
 
 	- OhNo\schaw_000
 		--FullControl
-
-
-cheers   
