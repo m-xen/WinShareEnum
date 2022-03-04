@@ -504,8 +504,9 @@ namespace WinShareEnum
                     AUTHLOCALLY = splat[0] == "." ? true : false;
                 }
 
-                btn_Stop.IsEnabled = true;
-                btn_Stop.Visibility = Visibility.Visible;
+                btnStop.IsEnabled = true;
+                btnStop.Visibility = Visibility.Visible;
+                btnGO.IsEnabled = false;
                 btnGO.Visibility = Visibility.Hidden;
                 resetGUI();
                 List<IPAddress> ip_list = new List<IPAddress>();
@@ -587,7 +588,7 @@ namespace WinShareEnum
 
                                                 SIDsDict.TryAdd(SID, ResolvedSID);
                                             }
-              }
+                                        }
                                         catch (Exception ex)
                                         {
                                             if (logLevel < LOG_LEVEL.INTERESTINGONLY)
@@ -609,17 +610,20 @@ namespace WinShareEnum
                 catch (OperationCanceledException)
                 {
                     addLog("Threads Terminated.", true);
-                    btn_Stop.Visibility = Visibility.Hidden;
+                    btnStop.Visibility = Visibility.Hidden;
+                    btnStop.IsEnabled = false;
                     btnGO.Visibility = Visibility.Visible;
+                    btnGO.IsEnabled = true;
                     pgbMain.Visibility = Visibility.Hidden;
-                    btn_Stop.IsEnabled = true;
                     return;
                 }
 
-                pgbMain.Visibility = Visibility.Hidden;
                 addLog("Share enumeration Complete.");
-
+                btnStop.Visibility = Visibility.Hidden;
+                btnStop.IsEnabled = false;
                 btnGO.Visibility = Visibility.Visible;
+                btnGO.IsEnabled = true;
+                pgbMain.Visibility = Visibility.Hidden;
 
                 int totalServers = all_readable_shares.Count;
                 int totalShares = 0;
@@ -657,9 +661,11 @@ namespace WinShareEnum
             {
 
                 addLog("Threads Terminated.", true);
-                btn_Stop.Visibility = Visibility.Hidden;
+                btnStop.Visibility = Visibility.Hidden;
+                btnStop.IsEnabled = false;
                 btnGO.Visibility = Visibility.Visible;
-                btn_Stop.IsEnabled = true;
+                btnGO.IsEnabled = true;
+                pgbMain.Visibility = Visibility.Hidden;
                 return;
             }
 
@@ -669,16 +675,21 @@ namespace WinShareEnum
                 if (ex.InnerException != null && ex.InnerException.Message != null && ex.InnerException.Message == "The operation was canceled.")
                 {
                     addLog("Threads Terminated.", true);
-                    btn_Stop.Visibility = Visibility.Hidden;
+                    btnStop.Visibility = Visibility.Hidden;
+                    btnStop.IsEnabled = false;
                     btnGO.Visibility = Visibility.Visible;
-                    btn_Stop.IsEnabled = true;
+                    btnGO.IsEnabled = true;
+                    pgbMain.Visibility = Visibility.Hidden;
                     return;
                 }
 
                 else
                 {
 
+                    btnStop.Visibility = Visibility.Hidden;
+                    btnStop.IsEnabled = false;
                     btnGO.Visibility = Visibility.Visible;
+                    btnGO.IsEnabled = true;
                     pgbMain.Visibility = Visibility.Hidden;
                     System.Windows.MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
 
@@ -692,7 +703,6 @@ namespace WinShareEnum
                     }
                 }
             }
-            btn_Stop.Visibility = Visibility.Hidden;
         }
 
         private void mi_Options_Click(object sender, RoutedEventArgs e)
@@ -724,12 +734,13 @@ namespace WinShareEnum
         {
             btnFindInterestingFiles.Visibility = Visibility.Hidden; //Hide the Find Interesting button
             btnFindInterestingFiles.IsEnabled = false; //Disable the Find Interesting button on click
-
+            btnGrepFiles.Visibility = Visibility.Hidden; //Hide the Inspect Files button
             btnGrepFiles.IsEnabled = false; //Disable the Inspect Files button, to make sure both aren't run in parallel
 
-            btn_StopInteresting.Visibility = Visibility.Visible; //Show the Stop button
-            btn_StopInteresting.IsEnabled = true;
-            btn_StopInteresting.Background = Brushes.Red;
+            btnStop.Visibility = Visibility.Visible; //Show the Stop button
+            btnStop.IsEnabled = true;
+            btnGO.Visibility = Visibility.Hidden; //Hide the Go button
+            btnGO.IsEnabled = false;
 
             try
             {
@@ -761,12 +772,14 @@ namespace WinShareEnum
                 finalInteresting = new ConcurrentBag<bool>();
 
                 addLog("Searching for interesting files complete.");
-                btn_StopInteresting.Visibility = Visibility.Hidden; //Hide the stop button
-                btn_StopInteresting.IsEnabled = false;
+                btnStop.Visibility = Visibility.Hidden; //Hide the stop button
+                btnStop.IsEnabled = false;
                 btnFindInterestingFiles.Visibility = Visibility.Visible; //Show the Find Interesting button
                 btnFindInterestingFiles.IsEnabled = true;
                 btnGrepFiles.Visibility = Visibility.Visible; //Show the Inspect Files button
                 btnGrepFiles.IsEnabled = true;
+                btnGO.Visibility = Visibility.Visible;
+                btnGO.IsEnabled = true;
                 pgbMain.Visibility = Visibility.Hidden; //Hide the progress bar
 
             }
@@ -777,12 +790,14 @@ namespace WinShareEnum
                 //reset file dict
                 all_readable_files = new ConcurrentDictionary<string, Dictionary<string, List<string>>>();
 
-                btn_StopInteresting.Visibility = Visibility.Hidden; //Hide the stop button
-                btn_StopInteresting.IsEnabled = false;
+                btnStop.Visibility = Visibility.Hidden; //Hide the stop button
+                btnStop.IsEnabled = false;
                 btnFindInterestingFiles.Visibility = Visibility.Visible; //Show the Find Interesting button
                 btnFindInterestingFiles.IsEnabled = true;
                 btnGrepFiles.Visibility = Visibility.Visible; //Show the Inspect Files button
                 btnGrepFiles.IsEnabled = true;
+                btnGO.Visibility = Visibility.Visible;
+                btnGO.IsEnabled = true;
                 pgbMain.Visibility = Visibility.Hidden; //Hide the progress bar
                 return;
             }
@@ -796,24 +811,28 @@ namespace WinShareEnum
                     //reset file dict
                     all_readable_files = new ConcurrentDictionary<string, Dictionary<string, List<string>>>();
 
-                    btn_StopInteresting.Visibility = Visibility.Hidden; //Hide the stop button
-                    btn_StopInteresting.IsEnabled = false;
+                    btnStop.Visibility = Visibility.Hidden; //Hide the stop button
+                    btnStop.IsEnabled = false;
                     btnFindInterestingFiles.Visibility = Visibility.Visible; //Show the Find Interesting button
                     btnFindInterestingFiles.IsEnabled = true;
                     btnGrepFiles.Visibility = Visibility.Visible; //Show the Inspect Files button
                     btnGrepFiles.IsEnabled = true;
+                    btnGO.Visibility = Visibility.Visible;
+                    btnGO.IsEnabled = true;
                     pgbMain.Visibility = Visibility.Hidden; //Hide the progress bar
                     return;
 
                 }
                 else
                 {
-                    btn_StopInteresting.Visibility = Visibility.Hidden; //Hide the stop button
-                    btn_StopInteresting.IsEnabled = false;
+                    btnStop.Visibility = Visibility.Hidden; //Hide the stop button
+                    btnStop.IsEnabled = false;
                     btnFindInterestingFiles.Visibility = Visibility.Visible; //Show the Find Interesting button
                     btnFindInterestingFiles.IsEnabled = true;
                     btnGrepFiles.Visibility = Visibility.Visible; //Show the Inspect Files button
                     btnGrepFiles.IsEnabled = true;
+                    btnGO.Visibility = Visibility.Visible;
+                    btnGO.IsEnabled = true;
                     pgbMain.Visibility = Visibility.Hidden; //Hide the progress bar
 
                     System.Windows.MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
@@ -834,12 +853,13 @@ namespace WinShareEnum
         {
             btnGrepFiles.Visibility = Visibility.Hidden; //Hide the Inspect Files button
             btnGrepFiles.IsEnabled = false;
-
+            btnFindInterestingFiles.Visibility = Visibility.Hidden; //Hide the Find Interesting button
             btnFindInterestingFiles.IsEnabled = false; //Disable the Find Interesting button, to make sure both aren't run in parallel
 
-            btn_StopGrep.Visibility = Visibility.Visible; //Show the Stop button
-            btn_StopGrep.IsEnabled = true;
-            btn_StopGrep.Background = Brushes.Red;
+            btnStop.Visibility = Visibility.Visible; //Show the Stop button
+            btnStop.IsEnabled = true;
+            btnGO.Visibility = Visibility.Hidden; //Hide the Go button
+            btnGO.IsEnabled = false;
 
             try
             {
@@ -869,8 +889,10 @@ namespace WinShareEnum
                 finalInteresting = new ConcurrentBag<bool>();
 
                 addLog("Searching file contents complete.");
-                btn_StopGrep.Visibility = Visibility.Hidden; //Hide the stop button
-                btn_StopGrep.IsEnabled = false;
+                btnStop.Visibility = Visibility.Hidden; //Hide the stop button
+                btnStop.IsEnabled = false;
+                btnGO.Visibility = Visibility.Visible; //Show the Go button
+                btnGO.IsEnabled = true;
                 btnGrepFiles.Visibility = Visibility.Visible; //Show the Inspect Files button
                 btnGrepFiles.IsEnabled = true;
                 btnFindInterestingFiles.Visibility = Visibility.Visible; //Show the Find Interesting button
@@ -886,8 +908,10 @@ namespace WinShareEnum
                 //reset file dict
                 all_readable_files = new ConcurrentDictionary<string, Dictionary<string, List<string>>>();
                 //todo: change
-                btn_StopGrep.Visibility = Visibility.Hidden; //Hide the stop button
-                btn_StopGrep.IsEnabled = false;
+                btnStop.Visibility = Visibility.Hidden; //Hide the stop button
+                btnStop.IsEnabled = false;
+                btnGO.Visibility = Visibility.Visible; //Show the Go button
+                btnGO.IsEnabled = true;
                 btnGrepFiles.Visibility = Visibility.Visible; //Show the Inspect Files button
                 btnGrepFiles.IsEnabled = true;
                 btnFindInterestingFiles.Visibility = Visibility.Visible; //Show the Find Interesting button
@@ -904,8 +928,10 @@ namespace WinShareEnum
                     //reset file dict
                     all_readable_files = new ConcurrentDictionary<string, Dictionary<string, List<string>>>();
                     //todo: change
-                    btn_StopGrep.Visibility = Visibility.Hidden; //Hide the stop button
-                    btn_StopGrep.IsEnabled = false;
+                    btnStop.Visibility = Visibility.Hidden; //Hide the stop button
+                    btnStop.IsEnabled = false;
+                    btnGO.Visibility = Visibility.Visible; //Show the Go button
+                    btnGO.IsEnabled = true;
                     btnGrepFiles.Visibility = Visibility.Visible; //Show the Inspect Files button
                     btnGrepFiles.IsEnabled = true;
                     btnFindInterestingFiles.Visibility = Visibility.Visible; //Show the Find Interesting button
@@ -916,8 +942,10 @@ namespace WinShareEnum
                 }
                 else
                 {
-                    btn_StopGrep.Visibility = Visibility.Hidden; //Hide the stop button
-                    btn_StopGrep.IsEnabled = false;
+                    btnStop.Visibility = Visibility.Hidden; //Hide the stop button
+                    btnStop.IsEnabled = false;
+                    btnGO.Visibility = Visibility.Visible; //Show the Go button
+                    btnGO.IsEnabled = true;
                     btnGrepFiles.Visibility = Visibility.Visible; //Show the Inspect Files button
                     btnGrepFiles.IsEnabled = true;
                     btnFindInterestingFiles.Visibility = Visibility.Visible; //Show the Find Interesting button
@@ -978,7 +1006,7 @@ namespace WinShareEnum
                 }
             }
         }
-        private void btn_Stop_Click(object sender, RoutedEventArgs e)
+        private void btnStop_Click(object sender, RoutedEventArgs e)
         {
             MessageBoxResult result = System.Windows.MessageBox.Show("Really Stop?", "Stop", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
@@ -986,12 +1014,10 @@ namespace WinShareEnum
             {
                 addLog("Stopping background threads...");
                 _cancellationToken.Cancel();
-                btn_StopInteresting.Visibility = Visibility.Hidden; //Hide the stop button
-                btn_StopInteresting.IsEnabled = false;
+                btnStop.Visibility = Visibility.Hidden; //Hide the stop button
+                btnStop.IsEnabled = false;
                 btnFindInterestingFiles.Visibility = Visibility.Visible; //Show the Find Interesting button
                 btnFindInterestingFiles.IsEnabled = true;
-                btn_StopGrep.Visibility = Visibility.Hidden; //Hide the stop button
-                btn_StopGrep.IsEnabled = false;
                 btnGrepFiles.Visibility = Visibility.Visible; //Show the Inspect Files button
                 btnGrepFiles.IsEnabled = true;
                 pgbMain.Visibility = Visibility.Hidden; //Hide the progress bar

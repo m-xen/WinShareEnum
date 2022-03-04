@@ -184,16 +184,16 @@
                 <ColumnDefinition/>
                 <ColumnDefinition Width="1082*"/>
             </Grid.ColumnDefinitions>
-            <TreeView x:Name="treeviewMain" HorizontalAlignment="Left" Margin="9.075,10,0,29" Width="330" SelectedItemChanged="treeviewMain_SelectedItemChanged" BorderBrush="LightGray" IsTabStop="False" Grid.Column="1"/>
-            <TextBox AcceptsReturn="False" ScrollViewer.VerticalScrollBarVisibility="Auto" ToolTip="If you want to auth locally, use the format .\username.&#x0a;Though it tries to grab the fully qualified domain name, sometimes (like over VPN) this fails.&#x0a;If possible use a user like relevant.domain.local\jonmurray" TabIndex="1" x:Name="tbUsername" TextChanged="tbUsername_TextChanged" GotFocus="tbUsername_GotFocus" Margin="0,59,21,0" HorizontalAlignment="Right" Width="184" Height="28" VerticalAlignment="Top" LostFocus="tbUsername_LostFocus" BorderBrush="LightGray" Grid.Column="1" Text="Domain\Username" />
-            <PasswordBox TabIndex="2" x:Name="tbPassword"  PasswordChanged="tbPassword_PasswordChanged" GotFocus="tbPassword_GotFocus" Margin="0,97,21,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Right" Width="141"  LostFocus="tbPassword_LostFocus" BorderBrush="LightGray" Grid.Column="1" Password="Password"/>
+            <TreeView x:Name="treeviewMain" HorizontalAlignment="Left" Margin="9,21,0,29" Width="330" SelectedItemChanged="treeviewMain_SelectedItemChanged" BorderBrush="LightGray" IsTabStop="False" Grid.Column="1"/>
+            <TextBox AcceptsReturn="False" ScrollViewer.VerticalScrollBarVisibility="Auto" ToolTip="If you want to auth locally, use the format .\username.&#x0a;Though it tries to grab the fully qualified domain name, sometimes (like over VPN) this fails.&#x0a;If possible use a user like relevant.domain.local\jonmurray" TabIndex="1" x:Name="tbUsername" TextChanged="tbUsername_TextChanged" GotFocus="tbUsername_GotFocus" Margin="0,87,21,0" HorizontalAlignment="Right" Width="184" Height="28" VerticalAlignment="Top" LostFocus="tbUsername_LostFocus" BorderBrush="LightGray" Grid.Column="1" Text="Domain\Username" />
+            <PasswordBox TabIndex="2" x:Name="tbPassword"  PasswordChanged="tbPassword_PasswordChanged" GotFocus="tbPassword_GotFocus" Margin="0,119,21,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Right" Width="184"  LostFocus="tbPassword_LostFocus" BorderBrush="LightGray" Grid.Column="1" Password="Password"/>
 
 
-            <TextBox x:Name="tbIPRange" Height="24" Margin="0,25,21,0" TextWrapping="Wrap" Text="127.0.0.1" VerticalAlignment="Top" TextAlignment="Right"  HorizontalAlignment="Right"  Width="108" Grid.Column="1" TextChanged="tbIPRange_TextChanged"/>
+            <TextBox x:Name="tbIPRange" Height="24" Margin="0,36,21,0" TextWrapping="Wrap" Text="127.0.0.1" VerticalAlignment="Top" TextAlignment="Left"  HorizontalAlignment="Right"  Width="184" Grid.Column="1" TextChanged="tbIPRange_TextChanged"/>
 
 
-            <Button x:Name="btnGO" Content="GO" Height="29" Margin="0,97,167,0" VerticalAlignment="Top" Click="btnGO_Click" HorizontalAlignment="Right" Width="38" Style="{StaticResource
-                {x:Static ToolBar.ButtonStyleKey}}" BorderBrush="Black" FontSize="11" FontWeight="Bold" Opacity="0.8" IsTabStop="False" Grid.Column="1" Background="#FF46F009"/>
+            <Button x:Name="btnGO" Content="Search" Height="29" Margin="371,23,0,0" VerticalAlignment="Top" Click="btnGO_Click" HorizontalAlignment="Left" Width="128" Style="{StaticResource
+                {x:Static ToolBar.ButtonStyleKey}}" BorderBrush="Black" FontSize="11" FontWeight="Bold" Opacity="0.8" IsTabStop="False" Grid.Column="1" Background="#FF46F009" RenderTransformOrigin="3.579,-2.895"/>
             <ProgressBar x:Name="pgbMain" Margin="371.075,0,21,10" Maximum="100" Visibility="Hidden" Height="14" VerticalAlignment="Bottom" Background="DarkGray" Foreground="#FFFF1C04" BorderThickness="0" Style="{DynamicResource ProgressBarStyle1}" Opacity="0.8" Grid.Column="1">
                 <ProgressBar.BorderBrush>
                     <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
@@ -204,16 +204,16 @@
 
             </ProgressBar>
             <ListBox x:Name="lbLog" Margin="371.075,0,21,29" ScrollViewer.VerticalScrollBarVisibility="Auto" Height="95" VerticalAlignment="Bottom" BorderBrush="LightGray" Grid.Column="1" IsTabStop="False"/>
-            <CheckBox x:Name="checkbox_Null"  Height="24" Margin="0,25,134,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="71" Checked="checkbox_Null_Checked" Unchecked="checkbox_Null_Unchecked" Grid.Column="1" IsTabStop="False">
-                <TextBlock FontSize="10" Height="33"><Run Text="Use NULL"/><LineBreak/><Run Text="Session"/></TextBlock>
+            <CheckBox x:Name="checkbox_Null"  Height="14" Margin="0,151,60,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="117" Checked="checkbox_Null_Checked" Unchecked="checkbox_Null_Unchecked" Grid.Column="1" IsTabStop="False" RenderTransformOrigin="0.268,-0.373">
+                <TextBlock FontSize="10" Height="24" RenderTransformOrigin="-0.233,0.789" Width="109"><Run Text="Use NULL Session"/><LineBreak/><Run/></TextBlock>
             </CheckBox>
 
             <CheckBox Margin="0,0,21,124" IsChecked="True" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" HorizontalAlignment="Right" Width="80" Height="16" VerticalAlignment="Bottom" Grid.Column="1" IsTabStop="False">
                 <TextBlock Margin="0,-2,0,0" FontSize="12" Height="24"><Run Text="Auto scroll"/></TextBlock>
             </CheckBox>
-            <Button x:Name="btnFindInterestingFiles" Content="Find Interesting Files" Height="28" Margin="371.075,21,0,0" VerticalAlignment="Top" Click="btFindInterestingFiles_Click" HorizontalAlignment="Left" Width="128" Style="{StaticResource
+            <Button x:Name="btnFindInterestingFiles" Content="Find Interesting Files" Height="28" Margin="371,84,0,0" VerticalAlignment="Top" Click="btFindInterestingFiles_Click" HorizontalAlignment="Left" Width="128" Style="{StaticResource
                 {x:Static ToolBar.ButtonStyleKey}}" Background="{x:Null}" BorderBrush="Black" FontSize="12" Opacity="0.8" IsEnabled="False" IsTabStop="False" Grid.Column="1"/>
-            <Button x:Name="btnGrepFiles" Content="Inspect File Contents" Height="28" Margin="371.075,54,0,0" VerticalAlignment="Top" Click="btnGrepFiles_Click" HorizontalAlignment="Left" Width="128"  Style="{StaticResource
+            <Button x:Name="btnGrepFiles" Content="Inspect File Contents" Height="28" Margin="371,122,0,0" VerticalAlignment="Top" Click="btnGrepFiles_Click" HorizontalAlignment="Left" Width="128"  Style="{StaticResource
                 {x:Static ToolBar.ButtonStyleKey}}" Background="{x:Null}" BorderBrush="Black" FontSize="12" Opacity="0.8" IsEnabled="False" IsTabStop="False" Grid.Column="1"/>
             <GroupBox x:Name="gb_EnumResults" Header="File Enumeration Results" Margin="371,165,21,149" Grid.Column="1">
                 <ListView Name="lv_resultsList" ItemContainerStyle="{StaticResource alternatingListViewItemStyle}" AlternationCount="2" Margin="0,4,0,0" >
@@ -235,23 +235,20 @@
                 </ListView>
 
             </GroupBox>
-            <Button x:Name="btn_Stop" Content="STOP" Height="29" Margin="0,97,167,0" VerticalAlignment="Top" Click="btn_Stop_Click" HorizontalAlignment="Right" Width="38" Visibility="Hidden" Style="{StaticResource
-                {x:Static ToolBar.ButtonStyleKey}}" Background="{x:Null}" BorderBrush="Black" FontSize="11" FontWeight="Bold" Opacity="0.8" Grid.Column="1"/>
-
-            <Button x:Name="btn_StopInteresting" Content="STOP" Height="28" Margin="371,21,0,0" VerticalAlignment="Top" Click="btn_Stop_Click" HorizontalAlignment="Left" Width="128" Visibility="Hidden" Style="{StaticResource
-                {x:Static ToolBar.ButtonStyleKey}}" Background="{x:Null}" BorderBrush="Black" FontSize="11" FontWeight="Bold" Opacity="0.8" Grid.Column="1"/>
-
-            <Button x:Name="btn_StopGrep" Content="STOP" Height="28" Margin="371,54,0,0" VerticalAlignment="Top" Click="btn_Stop_Click" HorizontalAlignment="Left" Width="128" Visibility="Hidden" Style="{StaticResource
-                {x:Static ToolBar.ButtonStyleKey}}" Background="{x:Null}" BorderBrush="Black" FontSize="11" FontWeight="Bold" Opacity="0.8" Grid.Column="1"/>
+            <Button x:Name="btnStop" Content="STOP" Height="29" Margin="371,23,0,0" VerticalAlignment="Top" Click="btnStop_Click" HorizontalAlignment="Left" Width="128" Visibility="Hidden" Style="{StaticResource
+                {x:Static ToolBar.ButtonStyleKey}}" BorderBrush="Black" FontSize="11" FontWeight="Bold" Opacity="0.8" Grid.Column="1" RenderTransformOrigin="-11.816,-2.068" Background="Red"/>
 
 
             <TextBox  Background="#FFF5F5F5" x:Name="tb_SelectedSharePerms" Height="105" Margin="511.075,21,223,0" TextWrapping="Wrap" Text="Selected Share Permissions..." VerticalAlignment="Top" IsEnabled="False" IsReadOnly="True" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" Grid.Column="1" IsTabStop="False" />
-            <Label x:Name="lbl_fileCount" Content="" HorizontalAlignment="Left"  Height="24" Margin="371.075,92,0,0" VerticalAlignment="Top" Width="128" Grid.Column="1"/>
-            <Button x:Name="btn_clearResults" Content="Clear Results" Height="16" Margin="371,0,0,129" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="128"  Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Background="{x:Null}" BorderBrush="LightGray" FontSize="8" Opacity="0.8" IsEnabled="True" Grid.Column="1" Click="btn_clearResults_Click" IsTabStop="False" />
-            <TextBox ToolTip="Filter results" AcceptsReturn="False" ScrollViewer.VerticalScrollBarVisibility="Auto" x:Name="tbFilter" TextChanged="tbFilter_TextChanged" Margin="0,131,223,0" HorizontalAlignment="Right" Width="220" Height="28" VerticalAlignment="Top" BorderBrush="LightGray" Grid.Column="1" IsTabStop="False" />
-            <Label x:Name="lblFilter" Content="Filter Results"  Height="24" Margin="553,131,443,0" VerticalAlignment="Top" Grid.Column="1" HorizontalAlignment="Right"/>
-            <TextBox x:Name="tbTimeout" Grid.Column="1" Height="23" Margin="0,137,21,0" TextWrapping="Wrap" Text="15" TextChanged="timeout_Change" VerticalAlignment="Top" HorizontalAlignment="Right" Width="120"/>
-            <TextBlock HorizontalAlignment="Right" TextWrapping="Wrap" Text="Timeout" VerticalAlignment="Top" Grid.Column="1" Margin="0,140,146,0" />
+            <Label x:Name="lbl_fileCount" Content="" HorizontalAlignment="Right"  Height="27" Margin="0,0,21,2" VerticalAlignment="Bottom" Width="128" Grid.Column="1" RenderTransformOrigin="0.5,1.252"/>
+            <Button x:Name="btn_clearResults" Content="Clear Results" Height="20" Margin="371,0,0,127" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="128"  Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Background="{x:Null}" BorderBrush="LightGray" Opacity="0.8" IsEnabled="True" Grid.Column="1" Click="btn_clearResults_Click" IsTabStop="False" />
+            <TextBox ToolTip="Filter results" AcceptsReturn="False" ScrollViewer.VerticalScrollBarVisibility="Auto" x:Name="tbFilter" TextChanged="tbFilter_TextChanged" Margin="0,139,223,0" HorizontalAlignment="Right" Width="273" Height="28" VerticalAlignment="Top" BorderBrush="LightGray" Grid.Column="1" IsTabStop="False" />
+            <Label x:Name="lblFilter" Content="Filter Results"  Height="24" Margin="0,141,501,0" VerticalAlignment="Top" Grid.Column="1" HorizontalAlignment="Right"/>
+            <TextBox x:Name="tbTimeout" Grid.Column="1" Height="19" Margin="449,58,0,0" TextWrapping="Wrap" Text="15" TextChanged="timeout_Change" VerticalAlignment="Top" HorizontalAlignment="Left" Width="50" TextAlignment="Center" RenderTransformOrigin="-1.6,1.16"/>
+            <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Timeout" VerticalAlignment="Top" Grid.Column="1" Margin="391,60,0,0" RenderTransformOrigin="2.671,0.566" />
+            <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Search Results" VerticalAlignment="Top" Grid.Column="1" Margin="10,0,0,0" RenderTransformOrigin="2.671,0.566" Width="142" />
+            <TextBlock HorizontalAlignment="Right" TextWrapping="Wrap" Text="Target Network" VerticalAlignment="Top" Grid.Column="1" Margin="0,15,62,0" RenderTransformOrigin="2.671,0.566" Width="142" />
+            <TextBlock HorizontalAlignment="Right" TextWrapping="Wrap" Text="Credentials" VerticalAlignment="Top" Grid.Column="1" Margin="0,67,62,0" RenderTransformOrigin="2.671,0.566" Width="142" />
 
 
             <!--
