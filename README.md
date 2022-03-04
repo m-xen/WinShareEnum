@@ -3,9 +3,9 @@ WinShareEnum
 
 WinShareEnum is an open source tool used to quickly scan networks for shared folders and to enumerate their permissions (looking for overly permissive access)
 
-The ‘Interesting Files’ feature contains a (configurable) list of default words, wildcards and regular expressions to configure a search of all discovered shared folders, to focus analysis into any potentially dangerous storage of information (such as user credentials) based on the **filename(s)**.
+The **‘Interesting Files’** feature contains a (configurable) list of default words, wildcards and regular expressions to configure a search of all discovered shared folders, to focus analysis into any potentially dangerous storage of information (such as user credentials) based on the **filename(s)**.
 
-The ‘File Contents’ feature contains a (configurable) list of default words, and can also contain wildcards & regular expressions, to search the contents of files within discovered shared folders, to focus analysis into any potentially dangerous storage of information (such as user credentials) based on the **file contents**.
+The **‘File Contents’** feature contains a (configurable) list of default words, and can also contain wildcards & regular expressions, to search the contents of files within discovered shared folders, to focus analysis into any potentially dangerous storage of information (such as user credentials) based on the **file contents**.
 
 
 download  https://github.com/m-xen/WinShareEnum/blob/master/Info/WinShareEnum.exe
