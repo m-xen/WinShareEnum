@@ -333,7 +333,7 @@ namespace WinShareEnum
                     ShareInfos.Add(shi1);
 
 
-                    currentPtr = new IntPtr(currentPtr.ToInt32() + nStructSize);
+                    currentPtr = new IntPtr(currentPtr.ToInt64() + nStructSize);
                 }
                 NetApiBufferFree(bufPtr);
                 return ShareInfos.ToArray();
