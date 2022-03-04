@@ -22,7 +22,9 @@ options:
 The tool allows you to enter a network IPv4 range in several formats, to specify which networks should be searched for shared folders, e.g.
 
 CIDR >> 192.168.1.0/24 
+
 Single Octet Range >> 192.168.1.0-255 (effectively /24)
+
 Multi Octet Range >> 192.168.0-255.0-255 (effectively /16)
 
 Regarding the ‘Use NULL Session’ option -> https://techcommunity.microsoft.com/t5/storage-at-microsoft/smb-and-null-sessions-why-your-pen-test-is-probably-wrong/ba-p/1185365
