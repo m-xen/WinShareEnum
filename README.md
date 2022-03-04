@@ -13,7 +13,7 @@ based on the file contents.
 
 download  https://github.com/m-xen/WinShareEnum/blob/master/Info/WinShareEnum.exe
 
-![winshareenum running](https://postimg.cc/w77tWNwp)
+![winshareenum running](https://i.postimg.cc/MKYypbRv/Win-Share-Enum.png)
 
 options:
 ![winshareenum options](http://i.imgur.com/9y6V0WH.png?1)
