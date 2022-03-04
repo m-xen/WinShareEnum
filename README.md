@@ -25,3 +25,5 @@ Single Octet Range >> 192.168.1.0-255 (effectively /24)
 Multi Octet Range >> 192.168.0-255.0-255 (effectively /16)  
 
 Regarding the ‘Use NULL Session’ option -> https://techcommunity.microsoft.com/t5/storage-at-microsoft/smb-and-null-sessions-why-your-pen-test-is-probably-wrong/ba-p/1185365
+
+Regarding the 'Number of Threads' option -> https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.paralleloptions.maxdegreeofparallelism?view=netframework-4.8#remarks

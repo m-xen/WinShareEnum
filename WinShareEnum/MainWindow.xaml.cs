@@ -29,7 +29,7 @@ namespace WinShareEnum
         public static List<string> fileContentsFilters = new List<string>() { "BEGIN PRIVATE KEY", "BEGIN RSA PRIVATE KEY", "password=", "password =", "pass=", "pass = ", "password:", "password :", "username =", "user =", "username=", "user=" };
 
         public static CancellationTokenSource _cancellationToken = new CancellationTokenSource();
-        public static ParallelOptions _parallelOption = new ParallelOptions { MaxDegreeOfParallelism = 30, CancellationToken = _cancellationToken.Token };
+        public static ParallelOptions _parallelOption = new ParallelOptions { MaxDegreeOfParallelism = -1, CancellationToken = _cancellationToken.Token };
 
         public static LOG_LEVEL logLevel = LOG_LEVEL.ERROR;
 
@@ -215,10 +215,6 @@ namespace WinShareEnum
             all_readable_shares = new ConcurrentDictionary<string, List<shareStruct>>();
             all_readable_files = new ConcurrentDictionary<string, Dictionary<string, List<string>>>();
             all_interesting_files = new ConcurrentBag<string>();
-            btnFindInterestingFiles.IsEnabled = false; //Disable the Find Interesting button on GUI reset
-            btnFindInterestingFiles.Background = Brushes.CadetBlue;
-            btnGrepFiles.IsEnabled = false;
-            btnGrepFiles.Background = Brushes.CadetBlue;
             treeviewMain.Items.Clear();
             pgbMain.Value = 0;
             pgbMain.Maximum = 0;
