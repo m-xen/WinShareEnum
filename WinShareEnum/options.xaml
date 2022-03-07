@@ -6,7 +6,7 @@
 
 
         <Label x:Name="lbl_Threads" FontSize="20" FontWeight="Bold" Margin="135,184,578,109" HorizontalContentAlignment="Right"/>
-        <GroupBox Header="Logging Verbosity" Height="94" Margin="12,116,568,0" VerticalAlignment="Top">
+        <GroupBox Header="Logging Verbosity" Height="94" Margin="12,189,568,0" VerticalAlignment="Top">
             <StackPanel Margin="0,0,0,-5" Height="68" VerticalAlignment="Bottom" >
                 <RadioButton x:Name="rb_useful" GroupName="logging" Content="Useful Info Only" Checked="rb_useful_Checked"/>
                 <RadioButton x:Name="rb_error" GroupName="logging" Content="Error" Checked="rb_error_Checked" />
@@ -15,18 +15,18 @@
             </StackPanel>
         </GroupBox>
 
-        <GroupBox Header="File Options" Margin="12,0,568,240"/>
-        <CheckBox x:Name="cb_includeBinaryFiles" HorizontalAlignment="Left" Margin="29,24,0,315" Width="168" Checked="cb_includeBinaryFiles_Checked" Unchecked="cb_includeBinaryFiles_Unchecked">
+        <GroupBox Header="File Options" Margin="12,0,568,172"/>
+        <CheckBox x:Name="cb_includeBinaryFiles" HorizontalAlignment="Left" Margin="29,30,0,287" Width="168" Checked="cb_includeBinaryFiles_Checked" Unchecked="cb_includeBinaryFiles_Unchecked">
             <TextBlock Height="18" Width="168"><Run Text="Include binary files "/></TextBlock>
         </CheckBox>
-        <CheckBox x:Name="cb_recursiveSearch" HorizontalAlignment="Left" Margin="29,41,0,298" Width="168" Checked="cb_recursiveSearch_Checked" Unchecked="cb_recursiveSearch_Unchecked">
+        <CheckBox x:Name="cb_recursiveSearch" HorizontalAlignment="Left" Margin="29,52,0,259" Width="168" Checked="cb_recursiveSearch_Checked" Unchecked="cb_recursiveSearch_Unchecked">
             <TextBlock Height="18" Width="148"><Run Text="Recursively search dirs"/></TextBlock>
         </CheckBox>
 
-        <CheckBox x:Name="cb_ResolveSIDs" HorizontalAlignment="Left" Margin="29,60,0,277" Width="168" IsChecked="True" Checked="cb_ResolveSIDs_Checked" Unchecked="cb_ResolveSIDs_Unchecked">
+        <CheckBox x:Name="cb_ResolveSIDs" HorizontalAlignment="Left" Margin="29,74,0,236" Width="168" IsChecked="True" Checked="cb_ResolveSIDs_Checked" Unchecked="cb_ResolveSIDs_Unchecked">
             <TextBlock Height="18" Width="148"><Run Text="Resolve Domain SIDs"/></TextBlock>
         </CheckBox>
-        <CheckBox x:Name="cb_includeWindowsFiles" HorizontalAlignment="Left" Margin="29,80,0,240" Width="168" Checked="cb_includeWindowsFiles_Checked" Unchecked="cb_includeWindowsFiles_Unchecked">
+        <CheckBox x:Name="cb_includeWindowsFiles" HorizontalAlignment="Left" Margin="29,98,0,201" Width="168" Checked="cb_includeWindowsFiles_Checked" Unchecked="cb_includeWindowsFiles_Unchecked">
             <TextBlock Height="40" Width="158"><Run Text="Include C:\Windows\* &#x0a;and admin$ files "/></TextBlock>
         </CheckBox>
 
