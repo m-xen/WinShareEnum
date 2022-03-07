@@ -29,9 +29,6 @@ namespace WinShareEnum
                     break;
             }
 
-            sl_threads.Value = MainWindow._parallelOption.MaxDegreeOfParallelism;
-            lbl_Threads.Content = sl_threads.Value;
-            
             foreach(string interesting in MainWindow.interestingFileList)
             {
                 lb_interesting.Items.Add(interesting);
@@ -47,17 +44,6 @@ namespace WinShareEnum
 
             cb_includeBinaryFiles.IsChecked = MainWindow.includeBinaryFiles;
 
-            tb_max_fileSize.Text = MainWindow.MAX_FILESIZE.ToString();
-
-        }
-
-        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            if (sl_threads != null && lbl_Threads.Content != null)
-            {
-               lbl_Threads.Content = Math.Round(sl_threads.Value).ToString();
-               MainWindow._parallelOption.MaxDegreeOfParallelism = int.Parse(Math.Round(sl_threads.Value).ToString());
-            }
         }
 
         #region logging
@@ -121,19 +107,6 @@ namespace WinShareEnum
                 persistance.saveFileContentRule(tb_fileFilter_newFilter.Text);
                 lb_fileContents.Items.Add(tb_fileFilter_newFilter.Text);
                 tb_fileFilter_newFilter.Text = "";
-            }
-        }
-
-        private void tb_max_fileSize_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            int fileSize;
-            if (!int.TryParse(tb_max_fileSize.Text, out fileSize))
-            {
-                MessageBox.Show("Filesize can only be a number", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            else
-            {
-                MainWindow.MAX_FILESIZE = fileSize;
             }
         }
 

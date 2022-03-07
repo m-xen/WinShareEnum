@@ -29,7 +29,7 @@ namespace WinShareEnum
         public static List<string> fileContentsFilters = new List<string>() { "BEGIN PRIVATE KEY", "BEGIN RSA PRIVATE KEY", "password=", "password =", "pass=", "pass = ", "password:", "password :", "username =", "user =", "username=", "user=" };
 
         public static CancellationTokenSource _cancellationToken = new CancellationTokenSource();
-        public static ParallelOptions _parallelOption = new ParallelOptions { MaxDegreeOfParallelism = -1, CancellationToken = _cancellationToken.Token };
+        public static ParallelOptions _parallelOption = new ParallelOptions { CancellationToken = _cancellationToken.Token };
 
         public static LOG_LEVEL logLevel = LOG_LEVEL.ERROR;
 
@@ -148,6 +148,19 @@ namespace WinShareEnum
             } else {
                 System.Windows.MessageBox.Show("Timeout Must be a whole integer.", "Error");
                 tbTimeout.Text = "";
+            }
+        }
+
+        private void max_fileSize_Change(object sender, TextChangedEventArgs e)
+        {
+            int fileSize;
+            if (!int.TryParse(tb_max_fileSize.Text, out fileSize))
+            {
+                System.Windows.MessageBox.Show("Filesize can only be a number", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else
+            {
+                MAX_FILESIZE = fileSize;
             }
         }
 
@@ -525,7 +538,7 @@ namespace WinShareEnum
                 }
 
                 pgbMain.Maximum = ip_list.Count;
-                addLog("Starting share enumeration of " + ip_list.Count + " servers (" + _parallelOption.MaxDegreeOfParallelism + " threads)...");
+                addLog("Starting share enumeration of " + ip_list.Count + " servers");
 
                 pgbMain.Visibility = Visibility.Visible;
 
@@ -1004,20 +1017,15 @@ namespace WinShareEnum
         }
         private void btnStop_Click(object sender, RoutedEventArgs e)
         {
-            MessageBoxResult result = System.Windows.MessageBox.Show("Really Stop?", "Stop", MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-            if (result == MessageBoxResult.Yes)
-            {
-                addLog("Stopping background threads...");
-                _cancellationToken.Cancel();
-                btnStop.Visibility = Visibility.Hidden; //Hide the stop button
-                btnStop.IsEnabled = false;
-                btnFindInterestingFiles.Visibility = Visibility.Visible; //Show the Find Interesting button
-                btnFindInterestingFiles.IsEnabled = true;
-                btnGrepFiles.Visibility = Visibility.Visible; //Show the Inspect Files button
-                btnGrepFiles.IsEnabled = true;
-                pgbMain.Visibility = Visibility.Hidden; //Hide the progress bar
-            }
+            addLog("Stopping background threads...");
+            _cancellationToken.Cancel();
+            btnStop.Visibility = Visibility.Hidden; //Hide the stop button
+            btnStop.IsEnabled = false;
+            btnFindInterestingFiles.Visibility = Visibility.Visible; //Show the Find Interesting button
+            btnFindInterestingFiles.IsEnabled = true;
+            btnGrepFiles.Visibility = Visibility.Visible; //Show the Inspect Files button
+            btnGrepFiles.IsEnabled = true;
+            pgbMain.Visibility = Visibility.Hidden; //Hide the progress bar
         }
 
         private void download_file(object sender, RoutedEventArgs e)
@@ -1433,26 +1441,6 @@ namespace WinShareEnum
                                             }
                                         }
                                     }
-
-                                    //todo: grab the sid locally
-                                    //S-1-5-21-849789807-3642702694-3220331756-1319
-                                    //try
-                                    //{
-                                    //    if (fas.IdentityReference.Value.StartsWith("S-1-5"))
-                                    //    {
-                                    //        var entry = new DirectoryEntry("LDAP://<SID=" + fas.IdentityReference.Value);
-                                    //        if (entry.Name != null)
-                                    //        {
-                                    //            var cvvdf = entry.Name;
-                                    //        }
-                                    //    }
-                                    //    string account = fas.IdentityReference.Translate(typeof(System.Security.Principal.NTAccount)).ToString();
-                                    //    var aas = account;
-                                    //}
-                                    //catch(Exception ex)
-                                    //{
-                                    //    var aa = ex;
-                                    //}
                                 }
 
                                 ss.currentUserCanRead = true;
@@ -1590,7 +1578,7 @@ namespace WinShareEnum
             {
                 List<string> finalInteresting = new List<string>();
                 var oNetworkCredential = getNetworkCredentials(sharepath.Split('\\')[0]);
-                //no need to timeout on long running tasko
+                //no need to timeout on long running task
                 using (new RemoteAccessHelper.NetworkConnection(@"\\" + sharepath, oNetworkCredential, false))
                 {
                     List<string> firstFileList = new List<string>();
@@ -1699,7 +1687,7 @@ namespace WinShareEnum
             {
                 List<string> finalInteresting = new List<string>();
                 var oNetworkCredential = getNetworkCredentials(sharepath.Split('\\')[0]);
-                //no need to timeout on long running tasko
+                //no need to timeout on long running task
                 using (new RemoteAccessHelper.NetworkConnection(@"\\" + sharepath, oNetworkCredential, false))
                 {
                     List<string> firstFileList = new List<string>();
@@ -1890,8 +1878,6 @@ namespace WinShareEnum
             return true;
         }
 
-
-        //needs updating
         private List<string> getAllFilesOnShare(string sharepath)
         {
             List<string> recursiveList = new List<string>();
@@ -1938,7 +1924,7 @@ namespace WinShareEnum
                     && !lowered.EndsWith("d$\\windows")
                     && !lowered.EndsWith("e$\\windows")
                     && !lowered.EndsWith("f$\\windows")
-                    ) //yes, this might miss some stuff, if you don't like it, don't use it
+                    ) //yes, this might miss some stuff
                     || INCLUDE_WINDOWS_DIRS == true) 
                 {
 
@@ -2048,15 +2034,6 @@ namespace WinShareEnum
                     return;
                 }
 
-
-                //if (shortFileName.Contains("."))
-                //{
-                //    if (System.IO.Path.GetFileNameWithoutExtension(lowered) == interesting)
-                //    {
-                //        return true;
-                //    }
-                //}
-
                 //anything.file
                 if (interesting.StartsWith("*."))
                 {
@@ -2106,7 +2083,7 @@ namespace WinShareEnum
         }
 
         /// <summary>
-        /// checks to see if a line within a file is a match or not. doesn't return a value as it is stored within the results pane anyway..
+        /// checks to see if a line within a file is a match or not. doesn't return a value as it is stored within the results pane anyway.
         /// </summary>
         /// <param name="line"></param>
         /// <param name="path"></param>
@@ -2133,7 +2110,7 @@ namespace WinShareEnum
         }
 
         /// <summary>
-        /// get network credentials, depending on if we need to auth locally or not..
+        /// get network credentials, depending on if we need to auth locally or not.
         /// </summary>
         /// <returns></returns>
         private static NetworkCredential getNetworkCredentials(string ServerName)
@@ -2161,7 +2138,7 @@ namespace WinShareEnum
         private void resetTokens()
         {
             _cancellationToken = new CancellationTokenSource();
-            _parallelOption = new ParallelOptions { MaxDegreeOfParallelism = 30, CancellationToken = _cancellationToken.Token };
+            _parallelOption = new ParallelOptions { CancellationToken = _cancellationToken.Token };
         }
 
         private string resolveDomainGroupSID(string SID, string dc, NetworkCredential oNetworkCredential)
@@ -2180,19 +2157,7 @@ namespace WinShareEnum
 
                     SearchResult res = dSearch.FindOne();
 
-                    //foreach (string key in res.Properties.PropertyNames)
-                    //{
-                    //    string tab = "    ";
-                    //    Console.WriteLine(key + " = ");
-                    //    foreach (object allofthem in res.Properties[key])
-                    //    {
-                    //        Console.WriteLine(tab + allofthem);
-                    //    }
-                    //}
-
-
                     string resolved = res.Properties["samaccountname"][0].ToString(); //always has a samaccountname
-
 
                     //weird way due to weird errors
                     foreach(var temp in res.Properties.PropertyNames)
@@ -2239,8 +2204,6 @@ namespace WinShareEnum
                 var vbb = ex;
                 return "";
             }
-
-
         }
 
         private string getDomainControllers(string baseDomain, string username, string password)
@@ -2292,7 +2255,6 @@ namespace WinShareEnum
                 items = null;
             }
         }
-
     }
 }
 
