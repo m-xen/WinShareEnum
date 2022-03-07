@@ -10,7 +10,7 @@ The **‘File Contents’** feature contains a (configurable) list of default words,
 
 download  https://github.com/m-xen/WinShareEnum/blob/master/Info/WinShareEnum.exe
 
-![winshareenum running](https://i.postimg.cc/MKYypbRv/Win-Share-Enum.png)
+![winshareenum running](https://i.postimg.cc/zXqKR3BX/Win-Share-Enum.png)
 
 options:
 ![winshareenum options](http://i.imgur.com/9y6V0WH.png?1)
