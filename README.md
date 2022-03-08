@@ -18,9 +18,11 @@ download  https://github.com/m-xen/WinShareEnum/blob/master/Info/WinShareEnum.ex
 ![winshareenum running](https://i.postimg.cc/zXqKR3BX/Win-Share-Enum.png)
 
 options:
+
 ![winshareenum options](https://i.postimg.cc/26z7DFKh/Options.png)
 
 user.config:
+
 ![winshareenum options](https://i.postimg.cc/XqsNp3LQ/USER-CONFIG.png)
   
 The tool allows you to enter a network IPv4 range in several formats, to specify which networks should be searched for shared folders, e.g.  
