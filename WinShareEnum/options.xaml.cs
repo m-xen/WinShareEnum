@@ -28,7 +28,6 @@ namespace WinShareEnum
                     rb_debug.IsChecked = true;
                     break;
             }
-
             foreach(string interesting in MainWindow.interestingFileList)
             {
                 lb_interesting.Items.Add(interesting);
@@ -133,6 +132,11 @@ namespace WinShareEnum
         private void cb_includeWindowsFiles_Unchecked(object sender, RoutedEventArgs e)
         {
             MainWindow.INCLUDE_WINDOWS_DIRS = false;
+        }
+
+        private void cb_includeWindowsFiles_Init(object sender, EventArgs e)
+        {
+            cb_includeWindowsFiles.IsChecked = MainWindow.INCLUDE_WINDOWS_DIRS;
         }
     }
 }

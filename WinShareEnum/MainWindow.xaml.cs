@@ -1800,15 +1800,7 @@ namespace WinShareEnum
             if (!all_readable_files[server].ContainsKey(share))
             {
                 string lowered = share.ToLower();
-                if ((INCLUDE_WINDOWS_DIRS == false
-                    && !lowered.EndsWith("c:\\windows")
-                    && !lowered.EndsWith("admin$")
-                    && !lowered.EndsWith("c$\\windows")
-                    && !lowered.EndsWith("d$\\windows")
-                    && !lowered.EndsWith("e$\\windows")
-                    && !lowered.EndsWith("f$\\windows")
-                    ) //yes, this might miss some stuff
-                    || INCLUDE_WINDOWS_DIRS == true)
+                if ((INCLUDE_WINDOWS_DIRS == false && !lowered.EndsWith("admin$")) || INCLUDE_WINDOWS_DIRS == true)
                 {
                     Dispatcher.Invoke((Action)delegate { addLog("Enumerating all files on " + sharepath + " this may take a while..."); });
                     recursiveList = getDirectoryFilesRecursive(@"\\" + sharepath).ToList();
@@ -1840,7 +1832,6 @@ namespace WinShareEnum
                         var id = Task.CurrentId;
                         Dispatcher.Invoke((Action)delegate { addLog("Thread " + id + " found directory " + path); });
                     }
-
                     try
                     {
                         if (_cancellationToken.IsCancellationRequested)
@@ -1849,7 +1840,14 @@ namespace WinShareEnum
                         }
                         foreach (string subDir in Directory.GetDirectories(path))
                         {
-                            queue.Enqueue(subDir);
+                            if (INCLUDE_WINDOWS_DIRS == false && !(subDir.ToLower().EndsWith("windows")))
+                            {
+                                queue.Enqueue(subDir);
+                            }
+                            else if (INCLUDE_WINDOWS_DIRS == true)
+                            {
+                                queue.Enqueue(subDir);
+                            }
                         }
 
                     }
