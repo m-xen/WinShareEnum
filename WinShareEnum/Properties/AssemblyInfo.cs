@@ -10,7 +10,7 @@ using System.Windows;
 [assembly: AssemblyTitle("WinShareEnum")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Jonathan.Murray@nccgroup.com")]
+[assembly: AssemblyCompany("NCCGroup")]
 [assembly: AssemblyProduct("WinShareEnum")]
 [assembly: AssemblyCopyright("Copyright © NCCGroup 2014")]
 [assembly: AssemblyTrademark("")]
@@ -51,5 +51,5 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.7")]
-[assembly: AssemblyFileVersion("0.7")]
+[assembly: AssemblyVersion("0.8")]
+[assembly: AssemblyFileVersion("0.8")]

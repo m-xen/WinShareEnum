@@ -33,7 +33,6 @@ namespace WinShareEnum
 
         public static LOG_LEVEL logLevel = LOG_LEVEL.ERROR;
 
-        public static bool recursiveSearch = true;
         public static bool optionsOpen = false;
         public static bool autoScroll = true;
         public static bool includeBinaryFiles = false;
@@ -45,6 +44,8 @@ namespace WinShareEnum
         public static int TIMEOUT = 15000;
         public static int NUMBER_FILES_PROCESSED = 0;
         public static int MAX_FILESIZE = 250;
+        public static int MIN_FILESIZE = 1000;
+        public static bool MIN_FILE_MODE = false;
         public static bool AUTHLOCALLY = false;
         public static bool INCLUDE_WINDOWS_DIRS = false;
 
@@ -135,33 +136,31 @@ namespace WinShareEnum
             }
         }
 
-        private void timeout_Change(object sender, TextChangedEventArgs e)
+        private void timeout_Change(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (tbTimeout.Text == "")
-                return;
-            
-            int temp;
-            // Do Timeout Change
-            if(int.TryParse(tbTimeout.Text,out temp))
-            {
-                TIMEOUT = temp * 1000;
-            } else {
-                System.Windows.MessageBox.Show("Timeout Must be a whole integer.", "Error");
-                tbTimeout.Text = "";
-            }
+            TIMEOUT = ((int)tbTimeout.Value) * 1000;
         }
 
-        private void max_fileSize_Change(object sender, TextChangedEventArgs e)
+        private void max_FileSize_Change(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            int fileSize;
-            if (!int.TryParse(tb_max_fileSize.Text, out fileSize))
-            {
-                System.Windows.MessageBox.Show("Filesize can only be a number", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            else
-            {
-                MAX_FILESIZE = fileSize;
-            }
+                MAX_FILESIZE = ((int)tbMaxFileSize.Value);
+        }
+        private void min_FileSize_Change(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            MIN_FILESIZE = ((int)tbMinFileSize.Value);
+        }
+        private void minFileSizeCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            MIN_FILE_MODE = true;
+            tbMaxFileSize.IsEnabled = false;
+            tbMinFileSize.IsEnabled = true;
+        }
+
+        private void minFileSizeCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            MIN_FILE_MODE = false;
+            tbMaxFileSize.IsEnabled = true;
+            tbMinFileSize.IsEnabled = false;
         }
 
         private void tbIPRange_TextChanged(object sender, TextChangedEventArgs e)
@@ -222,7 +221,17 @@ namespace WinShareEnum
             tbUsername.IsEnabled = true;
             tbPassword.IsEnabled = true;
         }
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            autoScroll = true;
+            lbLog.SelectedIndex = lbLog.Items.Count - 1;
+            lbLog.ScrollIntoView(lbLog.SelectedItem);
+        }
 
+        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            autoScroll = false;
+        }
         private void resetGUI()
         {
             all_readable_shares = new ConcurrentDictionary<string, List<shareStruct>>();
@@ -283,19 +292,6 @@ namespace WinShareEnum
             }
          
         }
-
-        private void CheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            autoScroll = true;
-            lbLog.SelectedIndex = lbLog.Items.Count - 1;
-            lbLog.ScrollIntoView(lbLog.SelectedItem);
-        }
-
-        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
-        {
-            autoScroll = false;
-        }
-
         private void addSharesToTreeview(List<shareStruct> item)
         {
             TreeViewItem ti = new TreeViewItem();
@@ -775,7 +771,7 @@ namespace WinShareEnum
                 await Task.Run(() =>
                  {
                      Parallel.ForEach(shareList, _parallelOption, item =>
-                         finalInteresting.Add(getInterstingFileList(item)));
+                         finalInteresting.Add(getInterestingFileList(item)));
                  });
 
                 finalInteresting = new ConcurrentBag<bool>();
@@ -974,47 +970,6 @@ namespace WinShareEnum
                 }
             }
         }
-
-        private void mi_copyAllSharesandPerms_Click(object sender, RoutedEventArgs e)
-        {
-            StringBuilder sb = new StringBuilder();
-
-            foreach (string key in all_readable_shares.Keys)
-            {
-                foreach (shareStruct ss in all_readable_shares[key])
-                {
-                    sb.Append("\r\n\r\n\r\n" + @"\\" + key + "\\" + ss.shareName + ":" + "\r\n");
-
-                    foreach (FileSystemAccessRule fas in ss.permissionsList)
-                    {
-                        if (resolveGroupSIDs == true && SIDsDict.ContainsKey(fas.IdentityReference.Value))
-                        {
-                            sb.Append("\r\n\r\n\t- " + SIDsDict[fas.IdentityReference.Value]);
-                        }
-                        else
-                        {
-                            sb.Append("\r\n\r\n\t- " + fas.IdentityReference.ToString());
-                        }
-
-                        sb.Append("\r\n\t\t--" + MapGenericRightsToFileSystemRights(fas.FileSystemRights));
-                    }
-                }
-            }
-            bool autoConvert = true;
-            System.Windows.DataObject data = new System.Windows.DataObject(System.Windows.DataFormats.UnicodeText, (Object)sb, autoConvert);
-            // Place the persisted data on the clipboard.
-            try
-            {
-                System.Windows.Clipboard.SetDataObject(data, true);
-            }
-            catch (Exception ex)
-            {
-                if (logLevel <= LOG_LEVEL.ERROR)
-                {
-                    addLog("Error copying to clipboard: " + ex.Message);
-                }
-            }
-        }
         private void btnStop_Click(object sender, RoutedEventArgs e)
         {
             addLog("Stopping background threads...");
@@ -1065,7 +1020,46 @@ namespace WinShareEnum
                 Dispatcher.Invoke((Action)delegate { addLog("Error downloading file " + aa.Name + " - " + ex.Message); });
             }
         }
+        private void mi_copyAllSharesandPerms_Click(object sender, RoutedEventArgs e)
+        {
+            StringBuilder sb = new StringBuilder();
 
+            foreach (string key in all_readable_shares.Keys)
+            {
+                foreach (shareStruct ss in all_readable_shares[key])
+                {
+                    sb.Append("\r\n\r\n\r\n" + @"\\" + key + "\\" + ss.shareName + ":" + "\r\n");
+
+                    foreach (FileSystemAccessRule fas in ss.permissionsList)
+                    {
+                        if (resolveGroupSIDs == true && SIDsDict.ContainsKey(fas.IdentityReference.Value))
+                        {
+                            sb.Append("\r\n\r\n\t- " + SIDsDict[fas.IdentityReference.Value]);
+                        }
+                        else
+                        {
+                            sb.Append("\r\n\r\n\t- " + fas.IdentityReference.ToString());
+                        }
+
+                        sb.Append("\r\n\t\t--" + MapGenericRightsToFileSystemRights(fas.FileSystemRights));
+                    }
+                }
+            }
+            bool autoConvert = true;
+            System.Windows.DataObject data = new System.Windows.DataObject(System.Windows.DataFormats.UnicodeText, (Object)sb, autoConvert);
+            // Place the persisted data on the clipboard.
+            try
+            {
+                System.Windows.Clipboard.SetDataObject(data, true);
+            }
+            catch (Exception ex)
+            {
+                if (logLevel <= LOG_LEVEL.ERROR)
+                {
+                    addLog("Error copying to clipboard: " + ex.Message);
+                }
+            }
+        }
         private void mi_CopyLog_Click(object sender, RoutedEventArgs e)
         {
             StringBuilder sb = new StringBuilder();
@@ -1572,7 +1566,7 @@ namespace WinShareEnum
 
         #region core file/directory enumeration
 
-        private bool getInterstingFileList(string sharepath)
+        private bool getInterestingFileList(string sharepath)
         {
             try
             {
@@ -1581,91 +1575,32 @@ namespace WinShareEnum
                 //no need to timeout on long running task
                 using (new RemoteAccessHelper.NetworkConnection(@"\\" + sharepath, oNetworkCredential, false))
                 {
-                    List<string> firstFileList = new List<string>();
-                    //low hanging
                     if (logLevel < LOG_LEVEL.ERROR)
                     {
                         var id = Task.CurrentId;
-                        Dispatcher.Invoke((Action)delegate { addLog("Thread " + id + " started searching interesting files (top dir only) on " + sharepath); });
+                        Dispatcher.Invoke((Action)delegate { addLog("Thread " + id + " starting recursively searching for interesting files on " + sharepath); });
                     }
-                    try
+                    List<string> recursiveList = getAllFilesOnShare(sharepath);
+                    foreach (string file in recursiveList)
                     {
                         if (_cancellationToken.IsCancellationRequested)
                         {
                             throw new OperationCanceledException();
                         }
-
-                        firstFileList = Directory.EnumerateFiles(@"\\" + sharepath, "*.*", System.IO.SearchOption.TopDirectoryOnly).ToList();
-                        if (firstFileList != null)
-                        {
-                            foreach (string file in firstFileList)
-                            {
-                                string fi = Path.GetFileName(file);
-                                isInteresting(fi, file);
-                                //update gui label with file count
-                                updateNumberofFilesProcessedLabel();
-
-                                if (logLevel == LOG_LEVEL.DEBUG)
-                                {
-                                    var id = Task.CurrentId;
-                                    Dispatcher.Invoke((Action)delegate { addLog("Thread " + id + " found file " + fi); });
-                                }
-                            }
-
-                            if (logLevel < LOG_LEVEL.ERROR)
-                            {
-                                var id = Task.CurrentId;
-                                Dispatcher.Invoke((Action)delegate { addLog("Thread " + id + " succsessfully finished searching interesting files (top dir only) on " + sharepath); });
-                            }
-                        }
+                        string fi = Path.GetFileName(file);
+                        isInteresting(fi, file);
+                        //update gui label with file count
+                        updateNumberofFilesProcessedLabel();
                     }
-                    catch (Exception ex)
+                    if (logLevel < LOG_LEVEL.ERROR)
                     {
-                        if (logLevel < LOG_LEVEL.INTERESTINGONLY)
-                        {
-                            Dispatcher.Invoke((Action)delegate { addLog("Error searching in " + sharepath + " - " + ex.Message); });
-                        }
-                    }
-
-                    if (recursiveSearch == true)
-                    {
-                        if (logLevel < LOG_LEVEL.ERROR)
-                        {
-                            var id = Task.CurrentId;
-                            Dispatcher.Invoke((Action)delegate { addLog("Thread " + id + " starting recursively searching for interesting files on " + sharepath); });
-                        }
-
-
-                        List<string> recursiveList = getAllFilesOnShare(sharepath);
-
-
-
-                        foreach (string file in recursiveList)
-                        {
-                            if (!firstFileList.Contains(file))
-                            {
-                                string fi = Path.GetFileName(file);
-                                isInteresting(fi, file);
-                                //update gui label with file count
-                                updateNumberofFilesProcessedLabel();
-                            }
-                            if (_cancellationToken.IsCancellationRequested)
-                            {
-                                throw new OperationCanceledException();
-                            }
-                        }
-
-                        if (logLevel < LOG_LEVEL.ERROR)
-                        {
-                            var id = Task.CurrentId;
-                            Dispatcher.Invoke((Action)delegate { addLog("Thread " + id + " finished recursively searching for interesting files on " + sharepath); });
-                        }
+                        var id = Task.CurrentId;
+                        Dispatcher.Invoke((Action)delegate { addLog("Thread " + id + " finished recursively searching for interesting files on " + sharepath); });
                     }
                     Dispatcher.Invoke((Action)delegate { pgbMain.Value += 1; });
                     return true;
                 }
             }
-
             catch (OperationCanceledException)
             {
                 throw;
@@ -1678,7 +1613,6 @@ namespace WinShareEnum
                 }
                 return false;
             }
-
         }
 
         private bool getFileContentsList(string sharepath)
@@ -1687,93 +1621,33 @@ namespace WinShareEnum
             {
                 List<string> finalInteresting = new List<string>();
                 var oNetworkCredential = getNetworkCredentials(sharepath.Split('\\')[0]);
-                //no need to timeout on long running task
                 using (new RemoteAccessHelper.NetworkConnection(@"\\" + sharepath, oNetworkCredential, false))
                 {
-                    List<string> firstFileList = new List<string>();
-                    //low hanging
                     if (logLevel < LOG_LEVEL.ERROR)
                     {
                         var id = Task.CurrentId;
-                        Dispatcher.Invoke((Action)delegate { addLog("Thread " + id + " started searching interesting files (top dir only) on " + sharepath); });
+                        Dispatcher.Invoke((Action)delegate { addLog("Thread " + id + " starting recursively searching for files on " + sharepath); });
                     }
-                    try
+                    List<string> recursiveList = getAllFilesOnShare(sharepath);
+                    foreach (string file in recursiveList)
                     {
                         if (_cancellationToken.IsCancellationRequested)
                         {
                             throw new OperationCanceledException();
                         }
-
-                        firstFileList = Directory.EnumerateFiles(@"\\" + sharepath, "*.*", System.IO.SearchOption.TopDirectoryOnly).ToList();
-                        if (firstFileList != null)
-                        {
-                            foreach (string file in firstFileList)
-                            {
-                                if (_cancellationToken.IsCancellationRequested)
-                                {
-                                    throw new OperationCanceledException();
-                                }
-                                inspectFile(file);
-                                //update gui label with file count
-                                updateNumberofFilesProcessedLabel();
-
-                                if (logLevel == LOG_LEVEL.DEBUG)
-                                {
-                                    var id = Task.CurrentId;
-                                    Dispatcher.Invoke((Action)delegate { addLog("Thread " + id + " found file " + file); });
-                                }
-                            }
-
-                            if (logLevel < LOG_LEVEL.ERROR)
-                            {
-                                var id = Task.CurrentId;
-                                Dispatcher.Invoke((Action)delegate { addLog("Thread " + id + " succsessfully finished grepping files (top dir only) on " + sharepath); });
-                            }
-                        }
+                        inspectFile(file);
+                        //update gui label with file count
+                        updateNumberofFilesProcessedLabel();
                     }
-                    catch (Exception ex)
+
+                    if (logLevel < LOG_LEVEL.ERROR)
                     {
-                        if (logLevel < LOG_LEVEL.INTERESTINGONLY)
-                        {
-                            Dispatcher.Invoke((Action)delegate { addLog("Error searching in " + sharepath + " - " + ex.Message); });
-                        }
+                        var id = Task.CurrentId;
+                        Dispatcher.Invoke((Action)delegate { addLog("Thread " + id + " finished recursively searching for interesting files on " + sharepath); });
                     }
-
-
-                    if (recursiveSearch == true)
-                    {
-                        if (logLevel < LOG_LEVEL.ERROR)
-                        {
-                            var id = Task.CurrentId;
-                            Dispatcher.Invoke((Action)delegate { addLog("Thread " + id + " starting recursively searching for greppable files on " + sharepath); });
-                        }
-
-
-                        List<string> recursiveList = getAllFilesOnShare(sharepath);
-                        foreach (string file in recursiveList)
-                        {
-                            if (_cancellationToken.IsCancellationRequested)
-                            {
-                                throw new OperationCanceledException();
-                            }
-
-                            if (!firstFileList.Contains(file))
-                            {
-                                inspectFile(file);
-                                //update gui label with file count
-                                updateNumberofFilesProcessedLabel();
-                            }
-                        }
-
-                        if (logLevel < LOG_LEVEL.ERROR)
-                        {
-                            var id = Task.CurrentId;
-                            Dispatcher.Invoke((Action)delegate { addLog("Thread " + id + " finished recursively searching for interesting files on " + sharepath); });
-                        }
-                    }
-                    Dispatcher.Invoke((Action)delegate { pgbMain.Value += 1; });
-                    return true;
                 }
+                Dispatcher.Invoke((Action)delegate { pgbMain.Value += 1; });
+                return true;
             }
 
             catch (OperationCanceledException)
@@ -1796,19 +1670,34 @@ namespace WinShareEnum
             try
             {
                 FileInfo fi = new FileInfo(filePath);
-                if (fi.Length <= MAX_FILESIZE * 1024)
+                if (MIN_FILE_MODE == false)
                 {
-                    if (includeBinaryFiles == false)
+                    if (fi.Length <= MAX_FILESIZE * 1024)
                     {
-
-                        binaryHelper bh = new binaryHelper();
-                        Encoding e;
+                            binaryHelper bh = new binaryHelper();
+                            Encoding e;
                         try
                         {
                             if (bh.IsText(out e, filePath, 100) == true)
                             {
                                 string line;
                                 StreamReader sr = new StreamReader(filePath, e);
+                                if (logLevel < LOG_LEVEL.INFO)
+                                {
+                                    var threadId = Task.CurrentId;
+                                    Dispatcher.Invoke((Action)delegate { addLog("Thread " + threadId + " began inspecting " + filePath); });
+                                }
+                                while ((line = sr.ReadLine()) != null)
+                                {
+                                    isFilterMatch(line, filePath);
+                                }
+
+                                sr.Close();
+                            }
+                            else
+                            {
+                                string line;
+                                StreamReader sr = new StreamReader(filePath);
                                 if (logLevel < LOG_LEVEL.INFO)
                                 {
                                     var threadId = Task.CurrentId;
@@ -1829,44 +1718,65 @@ namespace WinShareEnum
                                 Dispatcher.Invoke((Action)delegate { addLog("Failed to open " + filePath + " for reading " + ex.Message); });
                             }
                         }
-                    } //end binary files only
-
-                    else //include binary files
-                    {
-                        try
-                        {
-                            string line;
-                            StreamReader sr = new StreamReader(filePath);
-                            if (logLevel < LOG_LEVEL.INFO)
-                            {
-                                var threadId = Task.CurrentId;
-                                Dispatcher.Invoke((Action)delegate { addLog("Thread " + threadId + " began inspecting " + filePath); });
-                            }
-                            while ((line = sr.ReadLine()) != null)
-                            {
-                                isFilterMatch(line, filePath);
-                            }
-
-                            sr.Close();
-                        }
-                        catch (Exception ex)
-                        {
-                            if (logLevel < LOG_LEVEL.INFO)
-                            {
-                                Dispatcher.Invoke((Action)delegate { addLog("Failed to open " + filePath + " for reading " + ex.Message); });
-                            }
-                        }
-                    }//end all files (including binary) 
+                    } 
 
                     if (logLevel < LOG_LEVEL.INFO)
                     {
                         var threadId = Task.CurrentId;
                         Dispatcher.Invoke((Action)delegate { addLog("Thread " + threadId + " finished inspecting " + filePath); });
                     }
+                }
+                else if(MIN_FILE_MODE == true)
+                {
+                    if (fi.Length >= MIN_FILESIZE * 1048576)
+                    {
+                            binaryHelper bh = new binaryHelper();
+                            Encoding e;
+                            try
+                            {
+                                if (bh.IsText(out e, filePath, 100) == true)
+                                {
+                                    string line;
+                                    StreamReader sr = new StreamReader(filePath, e);
+                                    if (logLevel < LOG_LEVEL.INFO)
+                                    {
+                                        var threadId = Task.CurrentId;
+                                        Dispatcher.Invoke((Action)delegate { addLog("Thread " + threadId + " began inspecting " + filePath); });
+                                    }
+                                    while ((line = sr.ReadLine()) != null)
+                                    {
+                                        isFilterMatch(line, filePath);
+                                    }
 
-                }//end small files only
+                                    sr.Close();
+                                }
+                                else
+                                {
+                                    string line;
+                                    StreamReader sr = new StreamReader(filePath);
+                                    if (logLevel < LOG_LEVEL.INFO)
+                                    {
+                                        var threadId = Task.CurrentId;
+                                        Dispatcher.Invoke((Action)delegate { addLog("Thread " + threadId + " began inspecting " + filePath); });
+                                    }
+                                    while ((line = sr.ReadLine()) != null)
+                                    {
+                                        isFilterMatch(line, filePath);
+                                    }
+
+                                    sr.Close();
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                if (logLevel < LOG_LEVEL.INFO)
+                                {
+                                    Dispatcher.Invoke((Action)delegate { addLog("Failed to open " + filePath + " for reading " + ex.Message); });
+                                }
+                            }
+                        }
+                }
             }
-
             catch (Exception ex)
             {
                 if (logLevel < LOG_LEVEL.INFO)
@@ -1883,20 +1793,29 @@ namespace WinShareEnum
             List<string> recursiveList = new List<string>();
             string server = sharepath.Split('\\')[0];
             string share = sharepath.Split('\\')[1];
-
             if (!all_readable_files.ContainsKey(server))
             {
                 all_readable_files.TryAdd(server, new Dictionary<string, List<string>>());
             }
             if (!all_readable_files[server].ContainsKey(share))
             {
-                Dispatcher.Invoke((Action)delegate { addLog("Enumerating all files on " + sharepath + " this may take a while..."); });
-                recursiveList = getDirectoryFilesRecursive(@"\\" + sharepath).ToList();
-                Dispatcher.Invoke((Action)delegate { addLog("Finished enumerating files on " + sharepath); });
-                all_readable_files[server][share] = recursiveList;
-
+                string lowered = share.ToLower();
+                if ((INCLUDE_WINDOWS_DIRS == false
+                    && !lowered.EndsWith("c:\\windows")
+                    && !lowered.EndsWith("admin$")
+                    && !lowered.EndsWith("c$\\windows")
+                    && !lowered.EndsWith("d$\\windows")
+                    && !lowered.EndsWith("e$\\windows")
+                    && !lowered.EndsWith("f$\\windows")
+                    ) //yes, this might miss some stuff
+                    || INCLUDE_WINDOWS_DIRS == true)
+                {
+                    Dispatcher.Invoke((Action)delegate { addLog("Enumerating all files on " + sharepath + " this may take a while..."); });
+                    recursiveList = getDirectoryFilesRecursive(@"\\" + sharepath).ToList();
+                    Dispatcher.Invoke((Action)delegate { addLog("Finished enumerating files on " + sharepath); });
+                    all_readable_files[server][share] = recursiveList;
+                }
             }
-
             else   //do not need to enumerate all files if we have a list already
             {
                 if (all_readable_files[server].ContainsKey(share))
@@ -1904,9 +1823,7 @@ namespace WinShareEnum
                     recursiveList = all_readable_files[server][share];
                 }
             }
-
             return recursiveList;
-
         }
 
         private IEnumerable<string> getDirectoryFilesRecursive(string path)
@@ -1916,24 +1833,13 @@ namespace WinShareEnum
             while (queue.Count > 0 && !_cancellationToken.IsCancellationRequested)
             {
                 path = queue.Dequeue();
-                string lowered = path.ToLower();
-                if ((INCLUDE_WINDOWS_DIRS == false 
-                    && !lowered.EndsWith("c:\\windows") 
-                    && !lowered.EndsWith("admin$")
-                    && !lowered.EndsWith("c$\\windows")
-                    && !lowered.EndsWith("d$\\windows")
-                    && !lowered.EndsWith("e$\\windows")
-                    && !lowered.EndsWith("f$\\windows")
-                    ) //yes, this might miss some stuff
-                    || INCLUDE_WINDOWS_DIRS == true) 
+                updateNumberofFilesProcessedLabel();
                 {
-
                     if (logLevel == LOG_LEVEL.DEBUG)
                     {
                         var id = Task.CurrentId;
                         Dispatcher.Invoke((Action)delegate { addLog("Thread " + id + " found directory " + path); });
                     }
-
 
                     try
                     {
@@ -2018,65 +1924,85 @@ namespace WinShareEnum
 
             foreach (string interesting in interestingFileList)
             {
-
-                if (shortFileName == interesting)
                 {
-                    addToResultsList(filePath, shortFileName, "filename directly matches rule  (" + interesting + ")");
-                    Dispatcher.Invoke((Action)delegate { addLog("Interesting file found - " + shortFileName + " (" + shortFileName + ")"); });
-                    return;
-                }
-
-                string lowered = shortFileName.ToLower();
-                if (lowered == interesting)
-                {
-                    addToResultsList(filePath, shortFileName, "filename matches rule  (" + interesting + ")");
-                    Dispatcher.Invoke((Action)delegate { addLog("Interesting file found - " + shortFileName + " (" + shortFileName + ")"); });
-                    return;
-                }
-
-                //anything.file
-                if (interesting.StartsWith("*."))
-                {
-                    if (Path.GetExtension(lowered) == interesting.TrimStart('*'))
+                    if (shortFileName == interesting)
                     {
-                        addToResultsList(filePath, shortFileName, "Extension rule matched (" + interesting + ")");
-                        Dispatcher.Invoke((Action)delegate { addLog("Interesting file found - " + shortFileName + " (" + shortFileName + ")"); });
-                        return;
-                    }
-                }
-
-                //filename.anything
-                else if (interesting.EndsWith(".*"))
-                {
-                    string aa = Path.GetFileNameWithoutExtension(lowered);
-                    string bb = interesting.TrimEnd('*').TrimEnd('.');
-                    if (Path.GetFileNameWithoutExtension(lowered) == interesting.TrimEnd('*').TrimEnd('.'))
-                    {
-                        addToResultsList(filePath, shortFileName, "Wildcard extension rule matched (" + interesting + ")");
-                        Dispatcher.Invoke((Action)delegate { addLog("Interesting file found - " + shortFileName + " (" + shortFileName + ")"); });
-                        return;
-                    }
-                }
-
-                //regex
-                else if (interesting.StartsWith("###"))
-                {
-                    try
-                    {
-                        if (System.Text.RegularExpressions.Regex.IsMatch(shortFileName, interesting.TrimStart('#'), System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+                        FileInfo fi = new FileInfo(filePath);
+                        if ((MIN_FILE_MODE == false && (fi.Length <= MAX_FILESIZE * 1024)) || (MIN_FILE_MODE == true && (fi.Length >= MIN_FILESIZE * 1048576)))
                         {
-                            addToResultsList(filePath, shortFileName, "Regex matched (" + interesting.TrimStart('#') + ")");
+                            addToResultsList(filePath, shortFileName, "filename directly matches rule  (" + interesting + ")");
                             Dispatcher.Invoke((Action)delegate { addLog("Interesting file found - " + shortFileName + " (" + shortFileName + ")"); });
                             return;
                         }
                     }
-                    catch (Exception ex)
+                    string lowered = shortFileName.ToLower();
+                    if (lowered == interesting)
                     {
-                        if (logLevel <= LOG_LEVEL.ERROR)
+                        FileInfo fi = new FileInfo(filePath);
+                        if ((MIN_FILE_MODE == false && (fi.Length <= MAX_FILESIZE * 1024)) || (MIN_FILE_MODE == true && (fi.Length >= MIN_FILESIZE * 1048576)))
                         {
-                            Dispatcher.Invoke((Action)delegate { addLog("Regex parsing failed on interesting name comparison, file - " + shortFileName + " regex parsed " + interesting + "(" + ex.Message + ")"); });
+                            addToResultsList(filePath, shortFileName, "filename matches rule  (" + interesting + ")");
+                            Dispatcher.Invoke((Action)delegate { addLog("Interesting file found - " + shortFileName + " (" + shortFileName + ")"); });
+                            return;
                         }
-                        return;
+                    }
+
+                    //anything.file
+                    if (interesting.StartsWith("*."))
+                    {
+                        if (Path.GetExtension(lowered) == interesting.TrimStart('*'))
+                        {
+                            FileInfo fi = new FileInfo(filePath);
+                            if ((MIN_FILE_MODE == false && (fi.Length <= MAX_FILESIZE * 1024)) || (MIN_FILE_MODE == true && (fi.Length >= MIN_FILESIZE * 1048576)))
+                            {
+                                addToResultsList(filePath, shortFileName, "Extension rule matched (" + interesting + ")");
+                                Dispatcher.Invoke((Action)delegate { addLog("Interesting file found - " + shortFileName + " (" + shortFileName + ")"); });
+                                return;
+                            }
+                        }
+                    }
+
+                    //filename.anything
+                    else if (interesting.EndsWith(".*"))
+                    {
+                        string aa = Path.GetFileNameWithoutExtension(lowered);
+                        string bb = interesting.TrimEnd('*').TrimEnd('.');
+                        if (Path.GetFileNameWithoutExtension(lowered) == interesting.TrimEnd('*').TrimEnd('.'))
+                        {
+                            FileInfo fi = new FileInfo(filePath);
+                            if ((MIN_FILE_MODE == false && (fi.Length <= MAX_FILESIZE * 1024)) || (MIN_FILE_MODE == true && (fi.Length >= MIN_FILESIZE * 1048576)))
+                            {
+                                addToResultsList(filePath, shortFileName, "Wildcard extension rule matched (" + interesting + ")");
+                                Dispatcher.Invoke((Action)delegate { addLog("Interesting file found - " + shortFileName + " (" + shortFileName + ")"); });
+                                return;
+                            }
+                        }
+                    }
+
+                    //regex
+                    else if (interesting.StartsWith("###"))
+                    {
+                        try
+                        {
+                            if (System.Text.RegularExpressions.Regex.IsMatch(shortFileName, interesting.TrimStart('#'), System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+                            {
+                                FileInfo fi = new FileInfo(filePath);
+                                if ((MIN_FILE_MODE == false && (fi.Length <= MAX_FILESIZE * 1024)) || (MIN_FILE_MODE == true && (fi.Length >= MIN_FILESIZE * 1048576)))
+                                {
+                                    addToResultsList(filePath, shortFileName, "Regex matched (" + interesting.TrimStart('#') + ")");
+                                    Dispatcher.Invoke((Action)delegate { addLog("Interesting file found - " + shortFileName + " (" + shortFileName + ")"); });
+                                    return;
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            if (logLevel <= LOG_LEVEL.ERROR)
+                            {
+                                Dispatcher.Invoke((Action)delegate { addLog("Regex parsing failed on interesting name comparison, file - " + shortFileName + " regex parsed " + interesting + "(" + ex.Message + ")"); });
+                            }
+                            return;
+                        }
                     }
                 }
             }

@@ -38,12 +38,6 @@ namespace WinShareEnum
             {
                 lb_fileContents.Items.Add(fileContent);
             }
-
-
-            cb_recursiveSearch.IsChecked = MainWindow.recursiveSearch;
-
-            cb_includeBinaryFiles.IsChecked = MainWindow.includeBinaryFiles;
-
         }
 
         #region logging
@@ -108,16 +102,6 @@ namespace WinShareEnum
                 lb_fileContents.Items.Add(tb_fileFilter_newFilter.Text);
                 tb_fileFilter_newFilter.Text = "";
             }
-        }
-
-        private void cb_recursiveSearch_Checked(object sender, RoutedEventArgs e)
-        {
-            MainWindow.recursiveSearch = true;
-        }
-
-        private void cb_recursiveSearch_Unchecked(object sender, RoutedEventArgs e)
-        {
-            MainWindow.recursiveSearch = false;
         }
 
         private void cb_includeBinaryFiles_Checked(object sender, RoutedEventArgs e)
