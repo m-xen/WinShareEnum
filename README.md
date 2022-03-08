@@ -15,7 +15,7 @@ Alternatively you can select (using the checkbox) to use a minimum file size for
 
 download  https://github.com/m-xen/WinShareEnum/blob/master/Info/WinShareEnum.exe
 
-![winshareenum running](https://i.postimg.cc/zXqKR3BX/Win-Share-Enum.png)
+![winshareenum running](https://i.postimg.cc/T1cwXgBL/Win-Share-Enum.png)
 
 options:
 
