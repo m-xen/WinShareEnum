@@ -235,6 +235,7 @@
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
                             <GridViewColumn Header="Path" Width="auto"  DisplayMemberBinding="{Binding Path}" />
+                            <GridViewColumn Header="Size (MB)" Width="auto"  DisplayMemberBinding="{Binding Length}" />
                         </GridView>
                     </ListView.View>
                 </ListView>
