@@ -35,6 +35,7 @@
                         <Label  HorizontalAlignment="Left" Height="72" Margin="229,10,0,0" VerticalAlignment="Top" Width="221">
                             <TextBlock TextWrapping="Wrap"> Add filter for interesting files.  Wildcards and regular expressions (prefix with ###) work.</TextBlock>
                         </Label>
+                        <CheckBox x:Name="cb_allFiles" Content="*.*" HorizontalAlignment="Left" Margin="229,140,0,0" VerticalAlignment="Top" Width="215" Checked="cb_allFiles_Checked" Unchecked="cb_allFiles_Unchecked"/>
                     </Grid>
                 </TabItem>
                 <TabItem Header="File Contents">

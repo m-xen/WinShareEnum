@@ -28,12 +28,12 @@ namespace WinShareEnum
                     rb_debug.IsChecked = true;
                     break;
             }
-            foreach(string interesting in MainWindow.interestingFileList)
+            foreach (string interesting in MainWindow.interestingFileList)
             {
                 lb_interesting.Items.Add(interesting);
             }
-            
-            foreach(string fileContent in MainWindow.fileContentsFilters)
+
+            foreach (string fileContent in MainWindow.fileContentsFilters)
             {
                 lb_fileContents.Items.Add(fileContent);
             }
@@ -61,8 +61,29 @@ namespace WinShareEnum
         }
 
         #endregion
+        private void cb_allFiles_Checked(object sender, RoutedEventArgs e)
+        {
+            Settings.Default.Save();
+            MainWindow.interestingFileList.Clear();
+            lb_interesting.Items.Clear();
+            MainWindow.interestingFileList.Add("*.*");
+            lb_interesting.Items.Add("*.*");
+            tb_interesting_newFilter.Text = "";
+        }
 
-        private void btn_interesting_delete_Click(object sender, RoutedEventArgs e)
+
+        private void cb_allFiles_Unchecked(object sender, RoutedEventArgs e)
+                {
+                    lb_interesting.Items.Clear();
+                    tb_interesting_newFilter.Text = "";
+                    foreach (string s in persistance.getInterestingFiles())
+                    {
+                        MainWindow.interestingFileList.Add(s);
+                        lb_interesting.Items.Add(s);
+                    }
+                }
+
+    private void btn_interesting_delete_Click(object sender, RoutedEventArgs e)
         {
             if (lb_interesting.SelectedItem != null)
             {
