@@ -29,13 +29,15 @@
                 <TabItem Header="Interesting Files">
                     <Grid Background="#FFE5E5E5">
                         <ListBox x:Name="lb_interesting" Margin="0,0,251,0" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto"></ListBox>
-                        <TextBox x:Name="tb_interesting_newFilter" Margin="229,87,19,63" RenderTransformOrigin="0.497,2.28"></TextBox>
-                        <Button x:Name="btn_interesting_add" Content="Add" Margin="229,156,132,19" Click="btn_interesting_add_Click"></Button>
-                        <Button x:Name="btn_interesting_delete" Content="Delete" Margin="342,156,19,19" Click="btn_interesting_delete_Click"/>
+                        <TextBox x:Name="tb_interesting_newFilter" Margin="229,71,19,125" RenderTransformOrigin="0.497,2.28"></TextBox>
+                        <Button x:Name="btn_interesting_add" Content="Add" Margin="232,98,129,77" Click="btn_interesting_add_Click"></Button>
+                        <Button x:Name="btn_interesting_delete" Content="Delete" Margin="342,98,19,77" Click="btn_interesting_delete_Click"/>
                         <Label  HorizontalAlignment="Left" Height="72" Margin="229,10,0,0" VerticalAlignment="Top" Width="221">
                             <TextBlock TextWrapping="Wrap"> Add filter for interesting files.  Wildcards and regular expressions (prefix with ###) work.</TextBlock>
                         </Label>
-                        <CheckBox x:Name="cb_allFiles" Content="*.*" HorizontalAlignment="Left" Margin="229,140,0,0" VerticalAlignment="Top" Width="215" Checked="cb_allFiles_Checked" Unchecked="cb_allFiles_Unchecked"/>
+                        <CheckBox x:Name="cb_allFiles" Content="Set Filter to *.*" HorizontalAlignment="Left" Margin="232,145,0,0" VerticalAlignment="Top" Width="104" Checked="cb_allFiles_Checked" Unchecked="cb_allFiles_Unchecked" Height="16"/>
+                        <Button x:Name="btn_clearInteresting" Content="Clear Filter" HorizontalAlignment="Left" Margin="232,166,0,0" VerticalAlignment="Top" Width="102" Height="31" Click="btn_clearInterestingClick"/>
+                        <Button x:Name="btn_defaultInteresting" Content="Default Filter" HorizontalAlignment="Left" Margin="342,166,0,0" VerticalAlignment="Top" Width="102" Height="31" Click="btn_defaultInteresting_Click"/>
                     </Grid>
                 </TabItem>
                 <TabItem Header="File Contents">

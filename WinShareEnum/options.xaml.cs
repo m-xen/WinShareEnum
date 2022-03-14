@@ -13,27 +13,27 @@ namespace WinShareEnum
         {
             InitializeComponent();
 
-            switch (MainWindow.logLevel)
+            switch (mainWindow.logLevel)
             {
-                case MainWindow.LOG_LEVEL.INTERESTINGONLY:
+                case mainWindow.LOG_LEVEL.INTERESTINGONLY:
                     rb_useful.IsChecked = true;
                     break;
-                case MainWindow.LOG_LEVEL.ERROR:
+                case mainWindow.LOG_LEVEL.ERROR:
                     rb_error.IsChecked = true;
                     break;
-                case MainWindow.LOG_LEVEL.INFO:
+                case mainWindow.LOG_LEVEL.INFO:
                     rb_info.IsChecked = true;
                     break;
-                case MainWindow.LOG_LEVEL.DEBUG:
+                case mainWindow.LOG_LEVEL.DEBUG:
                     rb_debug.IsChecked = true;
                     break;
             }
-            foreach (string interesting in MainWindow.interestingFileList)
+            foreach (string interesting in mainWindow.interestingFileList)
             {
                 lb_interesting.Items.Add(interesting);
             }
 
-            foreach (string fileContent in MainWindow.fileContentsFilters)
+            foreach (string fileContent in mainWindow.fileContentsFilters)
             {
                 lb_fileContents.Items.Add(fileContent);
             }
@@ -42,46 +42,63 @@ namespace WinShareEnum
         #region logging
         private void rb_debug_Checked(object sender, RoutedEventArgs e)
         {
-            MainWindow.logLevel = MainWindow.LOG_LEVEL.DEBUG;
+            mainWindow.logLevel = mainWindow.LOG_LEVEL.DEBUG;
         }
 
         private void rb_info_Checked(object sender, RoutedEventArgs e)
         {
-            MainWindow.logLevel = MainWindow.LOG_LEVEL.INFO;
+            mainWindow.logLevel = mainWindow.LOG_LEVEL.INFO;
         }
 
         private void rb_error_Checked(object sender, RoutedEventArgs e)
         {
-            MainWindow.logLevel = MainWindow.LOG_LEVEL.ERROR;
+            mainWindow.logLevel = mainWindow.LOG_LEVEL.ERROR;
         }
 
         private void rb_useful_Checked(object sender, RoutedEventArgs e)
         {
-            MainWindow.logLevel = MainWindow.LOG_LEVEL.INTERESTINGONLY;
+            mainWindow.logLevel = mainWindow.LOG_LEVEL.INTERESTINGONLY;
         }
 
         #endregion
+        private void btn_clearInterestingClick(object sender, RoutedEventArgs e)
+        {
+            persistance.clearInterestingRule();
+            lb_interesting.Items.Clear();
+            persistance.saveInterestingRule("web.conf");
+            lb_interesting.Items.Add("web.conf");
+            tb_interesting_newFilter.Text = "";
+        }
+        private void btn_defaultInteresting_Click(object sender, RoutedEventArgs e)
+        {
+            persistance.clearInterestingRule();
+            lb_interesting.Items.Clear();
+            string[] defaultFilter = { "web.conf", "credentials", "credentials.*", "###\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b", "creds", "creds.*", "shadow", ".bashrc", "secret", "secret.*", "*.pem", "password.*", ".htaccess", "key.*", "privatekey.*", "private_key.*", "global.asax", "pwned.*", "*.key", "*.pkcs12", "*.pfx", "*.p12", "*.crt" };
+            foreach (string s in defaultFilter)
+            {
+                persistance.saveInterestingRule(s);
+                lb_interesting.Items.Add(s);
+            }
+            tb_interesting_newFilter.Text = "";
+        }
         private void cb_allFiles_Checked(object sender, RoutedEventArgs e)
         {
-            Settings.Default.Save();
-            MainWindow.interestingFileList.Clear();
+            persistance.clearInterestingRule();
             lb_interesting.Items.Clear();
-            MainWindow.interestingFileList.Add("*.*");
+            persistance.saveInterestingRule("*.*");
             lb_interesting.Items.Add("*.*");
             tb_interesting_newFilter.Text = "";
         }
 
 
         private void cb_allFiles_Unchecked(object sender, RoutedEventArgs e)
-                {
-                    lb_interesting.Items.Clear();
-                    tb_interesting_newFilter.Text = "";
-                    foreach (string s in persistance.getInterestingFiles())
-                    {
-                        MainWindow.interestingFileList.Add(s);
-                        lb_interesting.Items.Add(s);
-                    }
-                }
+        {
+            persistance.clearInterestingRule();
+            lb_interesting.Items.Clear();
+            persistance.saveInterestingRule("web.conf");
+            lb_interesting.Items.Add("web.conf");
+            tb_interesting_newFilter.Text = "";
+        }
 
     private void btn_interesting_delete_Click(object sender, RoutedEventArgs e)
         {
@@ -126,38 +143,38 @@ namespace WinShareEnum
 
         private void cb_includeBinaryFiles_Checked(object sender, RoutedEventArgs e)
         {
-            MainWindow.includeBinaryFiles = true;
+            mainWindow.includeBinaryFiles = true;
         }
 
         private void cb_includeBinaryFiles_Unchecked(object sender, RoutedEventArgs e)
         {
-            MainWindow.includeBinaryFiles = false;
+            mainWindow.includeBinaryFiles = false;
         }
 
 
         private void cb_ResolveSIDs_Checked(object sender, RoutedEventArgs e)
         {
-            MainWindow.resolveGroupSIDs = true;
+            mainWindow.resolveGroupSIDs = true;
         }
 
         private void cb_ResolveSIDs_Unchecked(object sender, RoutedEventArgs e)
         {
-            MainWindow.resolveGroupSIDs = false;
+            mainWindow.resolveGroupSIDs = false;
         }
 
         private void cb_includeWindowsFiles_Checked(object sender, RoutedEventArgs e)
         {
-            MainWindow.INCLUDE_WINDOWS_DIRS = true;
+            mainWindow.INCLUDE_WINDOWS_DIRS = true;
         }
 
         private void cb_includeWindowsFiles_Unchecked(object sender, RoutedEventArgs e)
         {
-            MainWindow.INCLUDE_WINDOWS_DIRS = false;
+            mainWindow.INCLUDE_WINDOWS_DIRS = false;
         }
 
         private void cb_includeWindowsFiles_Init(object sender, EventArgs e)
         {
-            cb_includeWindowsFiles.IsChecked = MainWindow.INCLUDE_WINDOWS_DIRS;
+            cb_includeWindowsFiles.IsChecked = mainWindow.INCLUDE_WINDOWS_DIRS;
         }
     }
 }

@@ -19,7 +19,7 @@ using System.DirectoryServices;
 
 namespace WinShareEnum
 {
-    public partial class MainWindow : Window
+    public partial class mainWindow : Window
     {
 
         #region variables
@@ -63,14 +63,14 @@ namespace WinShareEnum
 
         public static ConcurrentBag<string> SIDsToResolve = new ConcurrentBag<string>();
 
-        public enum GenericRights : uint
+        public enum genericRights : uint
         {
             GENERIC_READ = 0x80000000,
             GENERIC_WRITE = 0x40000000,
             GENERIC_EXECUTE = 0x20000000,
             GENERIC_ALL = 0x10000000
         }
-        public enum MappedGenericRights
+        public enum mappedGenericRights
         {
             FILE_GENERIC_EXECUTE = FileSystemRights.ExecuteFile | FileSystemRights.ReadPermissions | FileSystemRights.ReadAttributes | FileSystemRights.Synchronize,
             FILE_GENERIC_READ = FileSystemRights.ReadAttributes | FileSystemRights.ReadData | FileSystemRights.ReadExtendedAttributes | FileSystemRights.ReadPermissions | FileSystemRights.Synchronize,
@@ -99,7 +99,7 @@ namespace WinShareEnum
             public AuthorizationRuleCollection permissionsList;
 
         }
-        public MainWindow()
+        public mainWindow()
         {
             try
             {
@@ -221,14 +221,14 @@ namespace WinShareEnum
             tbUsername.IsEnabled = true;
             tbPassword.IsEnabled = true;
         }
-        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        private void checkBox_Checked(object sender, RoutedEventArgs e)
         {
             autoScroll = true;
             lbLog.SelectedIndex = lbLog.Items.Count - 1;
             lbLog.ScrollIntoView(lbLog.SelectedItem);
         }
 
-        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
+        private void checkBox_Unchecked(object sender, RoutedEventArgs e)
         {
             autoScroll = false;
         }
@@ -240,7 +240,7 @@ namespace WinShareEnum
             treeviewMain.Items.Clear();
             pgbMain.Value = 0;
             pgbMain.Maximum = 0;
-            SetGlowVisibility(pgbMain, Visibility.Hidden);
+            setGlowVisibility(pgbMain, Visibility.Hidden);
             NUMBER_FILES_PROCESSED = 0;
             SIDsDict = new ConcurrentDictionary<string, string>();
         }
@@ -386,7 +386,7 @@ namespace WinShareEnum
             Dispatcher.Invoke((Action)delegate { lbl_fileCount.Content = "Files Processed: " + NUMBER_FILES_PROCESSED; });
         }
 
-        private void SetGlowVisibility(System.Windows.Controls.ProgressBar progressBar, Visibility visibility)
+        private void setGlowVisibility(System.Windows.Controls.ProgressBar progressBar, Visibility visibility)
         {
             var glow = progressBar.Template.FindName("PART_GlowRect", progressBar) as FrameworkElement;
             if (glow != null) glow.Visibility = visibility;
@@ -441,7 +441,7 @@ namespace WinShareEnum
                                         sb.Append("\r\n\r\n\t- " + fas.IdentityReference.ToString());
                                     }
 
-                                    sb.Append("\r\n\t\t--" + MapGenericRightsToFileSystemRights(fas.FileSystemRights));
+                                    sb.Append("\r\n\t\t--" + mapGenericRightsToFileSystemRights(fas.FileSystemRights));
                                 }
 
                                 sb.Append("\r\n");
@@ -476,7 +476,7 @@ namespace WinShareEnum
 
         }
 
-        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        private void window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             //update the "path" column so it is always stretched,  like lindsay lohan
             // Bug fix, if you resize the window too small the whole thing crashes
@@ -1042,7 +1042,7 @@ namespace WinShareEnum
                             sb.Append("\r\n\r\n\t- " + fas.IdentityReference.ToString());
                         }
 
-                        sb.Append("\r\n\t\t--" + MapGenericRightsToFileSystemRights(fas.FileSystemRights));
+                        sb.Append("\r\n\t\t--" + mapGenericRightsToFileSystemRights(fas.FileSystemRights));
                     }
                 }
             }
@@ -1101,7 +1101,7 @@ namespace WinShareEnum
                             if (fas.IdentityReference.ToString().ToLower() == "everyone")
                             {
                                 sb.Append("\r\n\t- " + fas.IdentityReference.ToString());
-                                sb.Append("\r\n\t\t--" + MapGenericRightsToFileSystemRights(fas.FileSystemRights));
+                                sb.Append("\r\n\t\t--" + mapGenericRightsToFileSystemRights(fas.FileSystemRights));
                             }
 
                         }
@@ -1331,7 +1331,7 @@ namespace WinShareEnum
                                         {
                                             fs.Write("\r\n\r\n\t- " + fas.IdentityReference.ToString());
                                         }
-                                        fs.Write("\r\n\t\t--" + MapGenericRightsToFileSystemRights(fas.FileSystemRights));
+                                        fs.Write("\r\n\t\t--" + mapGenericRightsToFileSystemRights(fas.FileSystemRights));
                                     }
                                 }
                             }
@@ -1349,7 +1349,7 @@ namespace WinShareEnum
                                             if (fas.IdentityReference.ToString().ToLower() == "everyone")
                                             {
                                                 fs.Write("\r\n\t- " + fas.IdentityReference.ToString());
-                                                fs.Write("\r\n\t\t--" + MapGenericRightsToFileSystemRights(fas.FileSystemRights));
+                                                fs.Write("\r\n\t\t--" + mapGenericRightsToFileSystemRights(fas.FileSystemRights));
                                             }
                                         }
                                     }
@@ -1507,27 +1507,27 @@ namespace WinShareEnum
 
 
         //bug fix
-        private static FileSystemRights MapGenericRightsToFileSystemRights(FileSystemRights OriginalRights)
+        private static FileSystemRights mapGenericRightsToFileSystemRights(FileSystemRights OriginalRights)
         {
             FileSystemRights MappedRights = new FileSystemRights();
             bool blnWasNumber = false;
-            if (Convert.ToBoolean(Convert.ToInt64(OriginalRights) & Convert.ToInt64(GenericRights.GENERIC_EXECUTE)))
+            if (Convert.ToBoolean(Convert.ToInt64(OriginalRights) & Convert.ToInt64(genericRights.GENERIC_EXECUTE)))
             {
                 MappedRights = MappedRights | FileSystemRights.ExecuteFile | FileSystemRights.ReadPermissions | FileSystemRights.ReadAttributes | FileSystemRights.Synchronize;
                 blnWasNumber = true;
             }
 
-            if (Convert.ToBoolean(Convert.ToInt64(OriginalRights) & Convert.ToInt64(GenericRights.GENERIC_READ)))
+            if (Convert.ToBoolean(Convert.ToInt64(OriginalRights) & Convert.ToInt64(genericRights.GENERIC_READ)))
             {
                 MappedRights = MappedRights | FileSystemRights.ReadAttributes | FileSystemRights.ReadData | FileSystemRights.ReadExtendedAttributes | FileSystemRights.ReadPermissions | FileSystemRights.Synchronize;
                 blnWasNumber = true;
             }
-            if (Convert.ToBoolean(Convert.ToInt64(OriginalRights) & Convert.ToInt64(GenericRights.GENERIC_WRITE)))
+            if (Convert.ToBoolean(Convert.ToInt64(OriginalRights) & Convert.ToInt64(genericRights.GENERIC_WRITE)))
             {
                 MappedRights = MappedRights | FileSystemRights.AppendData | FileSystemRights.WriteAttributes | FileSystemRights.WriteData | FileSystemRights.WriteExtendedAttributes | FileSystemRights.ReadPermissions | FileSystemRights.Synchronize;
                 blnWasNumber = true;
             }
-            if (Convert.ToBoolean(Convert.ToInt64(OriginalRights) & Convert.ToInt64(GenericRights.GENERIC_ALL)))
+            if (Convert.ToBoolean(Convert.ToInt64(OriginalRights) & Convert.ToInt64(genericRights.GENERIC_ALL)))
             {
                 MappedRights = MappedRights | FileSystemRights.FullControl;
                 blnWasNumber = true;
@@ -1542,7 +1542,7 @@ namespace WinShareEnum
         }
         public static bool hasReadPermissions(FileSystemRights toRemainSilent)
         {
-            toRemainSilent = MapGenericRightsToFileSystemRights(toRemainSilent);
+            toRemainSilent = mapGenericRightsToFileSystemRights(toRemainSilent);
 
             if (toRemainSilent.HasFlag(FileSystemRights.ReadData) ||
                 toRemainSilent.HasFlag(FileSystemRights.Read) ||
@@ -2134,7 +2134,6 @@ namespace WinShareEnum
                 {
                     addLog("Failed to resolve SID " + SID);
                 }
-                var vbb = ex;
                 return "";
             }
         }

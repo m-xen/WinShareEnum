@@ -154,7 +154,7 @@ namespace WinShareEnum
                     {
                         var tokenSource = new CancellationTokenSource();
                         CancellationToken token = tokenSource.Token;
-                        int timeOut = MainWindow.TIMEOUT;
+                        int timeOut = mainWindow.TIMEOUT;
 
                         var task = Task.Factory.StartNew(() =>
                             {
@@ -325,7 +325,7 @@ namespace WinShareEnum
                 IntPtr currentPtr = bufPtr;
                 for (int i = 0; i < entriesread; i++)
                 {
-                    if (MainWindow._cancellationToken.IsCancellationRequested == true)
+                    if (mainWindow._cancellationToken.IsCancellationRequested == true)
                     {
                         throw new OperationCanceledException();
                     }
@@ -360,7 +360,7 @@ namespace WinShareEnum
             if (Settings.Default.interestingFileNameRules == null)
             {
                 Settings.Default.interestingFileNameRules = new StringCollection();
-                foreach (string s in MainWindow.interestingFileList)
+                foreach (string s in mainWindow.interestingFileList)
                 {
                     Settings.Default.interestingFileNameRules.Add(s);
                 }
@@ -370,7 +370,7 @@ namespace WinShareEnum
             if (Settings.Default.FileContentRules == null)
             {
                 Settings.Default.FileContentRules = new StringCollection();
-                foreach (string s in MainWindow.fileContentsFilters)
+                foreach (string s in mainWindow.fileContentsFilters)
                 {
                     Settings.Default.FileContentRules.Add(s);
                 }
@@ -397,14 +397,14 @@ namespace WinShareEnum
         public static void saveInterestingRule(string interesting)
         {
             Settings.Default.interestingFileNameRules.Add(interesting);
-            MainWindow.interestingFileList.Add(interesting);
+            mainWindow.interestingFileList.Add(interesting);
             Settings.Default.Save();
         }
 
         public static void saveFileContentRule(string fileContent)
         {
             Settings.Default.FileContentRules.Add(fileContent);
-            MainWindow.fileContentsFilters.Add(fileContent);
+            mainWindow.fileContentsFilters.Add(fileContent);
             Settings.Default.Save();
         }
         #endregion
@@ -413,17 +413,25 @@ namespace WinShareEnum
         public static void deleteInterestingRule(string interesting)
         {
             Settings.Default.interestingFileNameRules.Remove(interesting);
-            MainWindow.interestingFileList.Remove(interesting);
+            mainWindow.interestingFileList.Remove(interesting);
             Settings.Default.Save();
         }
 
         public static void deleteFileContentRule(string fileContent)
         {
             Settings.Default.FileContentRules.Remove(fileContent);
-            MainWindow.fileContentsFilters.Remove(fileContent);
+            mainWindow.fileContentsFilters.Remove(fileContent);
             Settings.Default.Save();
         }
-
+        public static void clearInterestingRule()
+        {
+            foreach (string s in mainWindow.interestingFileList)
+            {
+                Settings.Default.interestingFileNameRules.Remove(s);
+            }
+            mainWindow.interestingFileList.Clear();
+            Settings.Default.Save();
+        }
         #endregion
 
     }

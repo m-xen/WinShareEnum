@@ -1,8 +1,8 @@
-﻿<Window x:Class="WinShareEnum.MainWindow"
+﻿<Window x:Class="WinShareEnum.mainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:WinShareEnum"
-        Title="Windows Share Enumerator" Height="732" Width="1108" SizeChanged="Window_SizeChanged" Icon="pack://application:,,,/Resources/NCCG-Icon-[CMYK].ico" MinWidth="1111" MinHeight="732" >
+        Title="Windows Share Enumerator" Height="732" Width="1108" SizeChanged="window_SizeChanged" Icon="pack://application:,,,/Resources/NCCG-Icon-[CMYK].ico" MinWidth="1111" MinHeight="732" >
 
     <Window.Resources>
         <LinearGradientBrush x:Key="DefaultTabColor" EndPoint="0.5,1" StartPoint="0.5,0"/>
@@ -213,7 +213,7 @@
                 <TextBlock Height="24" RenderTransformOrigin="-0.233,0.789" Width="109"><Run Text="Use NULL Session"/><LineBreak/><Run/></TextBlock>
             </CheckBox>
 
-            <CheckBox Margin="0,0,21,124" IsChecked="True" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" HorizontalAlignment="Right" Width="80" Height="16" VerticalAlignment="Bottom" Grid.Column="1" IsTabStop="False">
+            <CheckBox Margin="0,0,21,124" IsChecked="True" Checked="checkBox_Checked" Unchecked="checkBox_Unchecked" HorizontalAlignment="Right" Width="80" Height="16" VerticalAlignment="Bottom" Grid.Column="1" IsTabStop="False">
                 <TextBlock FontSize="12" Height="24"><Run Text="Auto scroll"/></TextBlock>
             </CheckBox>
             <Button x:Name="btnFindInterestingFiles" Content="Find Interesting Files" Height="28" Margin="524,28,0,0" VerticalAlignment="Top" Click="btFindInterestingFiles_Click" HorizontalAlignment="Left" Width="146" Style="{StaticResource
