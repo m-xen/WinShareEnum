@@ -25,7 +25,7 @@ namespace WinShareEnum
         #region variables
         public static string USERNAME = "";
         public static string PASSSWORD = "";
-        public static List<string> interestingFileList = new List<string>() { "web.conf", "credentials", "credentials.*", "###\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b", "creds", "creds.*", "shadow", ".bashrc", "secret", "secret.*", "*.pem", "password.*", ".htaccess", "key.*", "privatekey.*", "private_key.*", "global.asax", "pwned.*", "*.key", "*.pkcs12", "*.pfx", "*.p12", "*.crt" };
+        public static List<string> interestingFileList = new List<string>() { "*pwned*", "*creds*", "*shadow*", "*secret*", "*password*", "*key*", "*bashrc*", "*.htaccess", "*.pem", "*.pkcs12", "*.pfx", "*.p12", "*.crt", "global.asax", "web.conf"};
         public static List<string> fileContentsFilters = new List<string>() { "BEGIN PRIVATE KEY", "BEGIN RSA PRIVATE KEY", "password=", "password =", "pass=", "pass = ", "password:", "password :", "username =", "user =", "username=", "user=" };
 
         public static CancellationTokenSource _cancellationToken = new CancellationTokenSource();
@@ -245,14 +245,13 @@ namespace WinShareEnum
             SIDsDict = new ConcurrentDictionary<string, string>();
         }
 
-        private void addToResultsList(string pathName, string filename, string comment = "", string fiLength = "")
+        private void addToResultsList(string pathName, string filename, string comment = "")
         {
 
             dgItem dg = new dgItem();
-            dg.Comment = comment;
-            dg.Name = filename;
             dg.Path = pathName;
-            dg.Length = fiLength;
+            dg.Name = filename;
+            dg.Comment = comment;
 
             Dispatcher.Invoke((Action)delegate
             {
@@ -383,7 +382,7 @@ namespace WinShareEnum
         private void updateNumberofFilesProcessedLabel()
         {
             Interlocked.Increment(ref NUMBER_FILES_PROCESSED);
-            Dispatcher.Invoke((Action)delegate { lbl_fileCount.Content = "Files Processed: " + NUMBER_FILES_PROCESSED; });
+            Dispatcher.Invoke((Action)delegate { lbl_fileCount.Content = "Processing: " + NUMBER_FILES_PROCESSED; });
         }
 
         private void setGlowVisibility(System.Windows.Controls.ProgressBar progressBar, Visibility visibility)
@@ -1117,10 +1116,10 @@ namespace WinShareEnum
         private void mi_CopyResultsPane_Click(object sender, RoutedEventArgs e)
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("Path" + "\t" + "Size (MB)" + "\t" + "Comment" + "\r");
+            sb.Append("Path" + "\t" + "Size (MB) or Comment" + "\r");
             foreach (dgItem item in lv_resultsList.Items)
             {
-                sb.Append(item.Path + "\t" + item.Length + "\t" + item.Comment + "\r\n");
+                sb.Append(item.Path + "\t" + item.Comment + "\r\n");
             }
             bool autoConvert = true;
             System.Windows.DataObject data = new System.Windows.DataObject(System.Windows.DataFormats.UnicodeText, (Object)sb, autoConvert);
@@ -1308,10 +1307,10 @@ namespace WinShareEnum
                     switch (clicked.Name)
                     {
                         case "mi_saveResultsToFile":
-                            fs.WriteLine("Path" + "\t" + "Size (MB)" + "\t" + "Comment" + "\r");
+                            fs.WriteLine("Path" + "\t" + "Size (MB) or Comment" + "\r");
                             foreach (dgItem item in lv_resultsList.Items)
                             {
-                                fs.WriteLine(item.Path + "\t" + item.Length + "\t" + item.Comment + "\r");
+                                fs.WriteLine(item.Path + "\t" + item.Comment + "\r");
                             }
                             break;
                         case "mi_saveAllSharesandPermsToFile":
@@ -1803,7 +1802,7 @@ namespace WinShareEnum
             if (!all_readable_files[server].ContainsKey(share))
             {
                 string lowered = share.ToLower();
-                if ((INCLUDE_WINDOWS_DIRS == false && !lowered.EndsWith("admin$")) || INCLUDE_WINDOWS_DIRS == true)
+                if ((INCLUDE_WINDOWS_DIRS == false && !lowered.EndsWith("admin$")) || (INCLUDE_WINDOWS_DIRS == true && !lowered.EndsWith("admin$")))
                 {
                     Dispatcher.Invoke((Action)delegate { addLog("Enumerating all files on " + sharepath + " this may take a while..."); });
                     recursiveList = getDirectoryFilesRecursive(@"\\" + sharepath).ToList();
@@ -1830,10 +1829,10 @@ namespace WinShareEnum
                 path = queue.Dequeue();
                 updateNumberofFilesProcessedLabel();
                 {
-                    if (logLevel == LOG_LEVEL.DEBUG)
+                    if (logLevel < LOG_LEVEL.INFO)
                     {
                         var id = Task.CurrentId;
-                        Dispatcher.Invoke((Action)delegate { addLog("Thread " + id + " found directory " + path); });
+                        Dispatcher.Invoke((Action)delegate { addLog("Thread " + id + " searching directory " + path); });
                     }
                     try
                     {
@@ -1861,22 +1860,28 @@ namespace WinShareEnum
                             Dispatcher.Invoke((Action)delegate { addLog("Permission denied for shares in directory " + path + " - " + ex.Message); });
                         }
                     }
-                    string[] files = null;
+                    //string[] files = null;
+                    List<string> files = new List<string>();
                     try
                     {
                         if (_cancellationToken.IsCancellationRequested)
                         {
                             throw new OperationCanceledException();
                         }
-                        {
-                            files = Directory.GetFiles(path);
-
-                            if (logLevel == LOG_LEVEL.DEBUG)
+                        //files = Directory.GetFiles(path);
+                        foreach (string extension in interestingFileList)
                             {
-                                var id = Task.CurrentId;
-                                foreach (string fi in files)
+                            updateNumberofFilesProcessedLabel();
+                            var intFiles = Directory.EnumerateFiles(path, extension, SearchOption.TopDirectoryOnly)
+                                .AsParallel();
+                            foreach (string file in intFiles)
+                            {
+                                files.Add(file);
+                                updateNumberofFilesProcessedLabel();
+                                if (logLevel == LOG_LEVEL.DEBUG)
                                 {
-                                    Dispatcher.Invoke((Action)delegate { addLog("Thread " + id + " found path " + fi); });
+                                    var id = Task.CurrentId;
+                                    Dispatcher.Invoke((Action)delegate { addLog("Thread " + id + " found path " + file); });
                                 }
                             }
                         }
@@ -1901,7 +1906,7 @@ namespace WinShareEnum
                             throw new OperationCanceledException();
                         }
 
-                        for (int i = 0; i < files.Length; i++)
+                        for (int i = 0; i < files.Count; i++)
                         {
                             yield return files[i];
                         }
@@ -1921,97 +1926,14 @@ namespace WinShareEnum
         /// <param name="filePath"></param>
         private void isInteresting(string shortFileName, string filePath)
         {
-
-
-            foreach (string interesting in interestingFileList)
+            FileInfo fi = new FileInfo(filePath);
+            if ((MIN_FILE_MODE == false && (fi.Length <= MAX_FILESIZE * 1024)) || (MIN_FILE_MODE == true && (fi.Length >= MIN_FILESIZE * 1048576)))
             {
-                {
-                    if (shortFileName == interesting)
-                    {
-                        FileInfo fi = new FileInfo(filePath);
-                        if ((MIN_FILE_MODE == false && (fi.Length <= MAX_FILESIZE * 1024)) || (MIN_FILE_MODE == true && (fi.Length >= MIN_FILESIZE * 1048576)))
-                        {
 
-                            string fiLength = (fi.Length / 1024576).ToString();
-                            addToResultsList(filePath, shortFileName, "filename directly matches rule  (" + interesting + ")",fiLength);
-                            Dispatcher.Invoke((Action)delegate { addLog("Interesting file found - " + shortFileName + " (" + shortFileName + ")"); });
-                            return;
-                        }
-                    }
-                    string lowered = shortFileName.ToLower();
-                    if (lowered == interesting)
-                    {
-                        FileInfo fi = new FileInfo(filePath);
-                        if ((MIN_FILE_MODE == false && (fi.Length <= MAX_FILESIZE * 1024)) || (MIN_FILE_MODE == true && (fi.Length >= MIN_FILESIZE * 1048576)))
-                        {
-                            string fiLength = (fi.Length / 1024576).ToString();
-                            addToResultsList(filePath, shortFileName, "filename matches rule  (" + interesting + ")", fiLength);
-                            Dispatcher.Invoke((Action)delegate { addLog("Interesting file found - " + shortFileName + " (" + shortFileName + ")"); });
-                            return;
-                        }
-                    }
-
-                    //anything.file
-                    if (interesting.StartsWith("*."))
-                    {
-                        if (Path.GetExtension(lowered) == interesting.TrimStart('*'))
-                        {
-                            FileInfo fi = new FileInfo(filePath);
-                            if ((MIN_FILE_MODE == false && (fi.Length <= MAX_FILESIZE * 1024)) || (MIN_FILE_MODE == true && (fi.Length >= MIN_FILESIZE * 1048576)))
-                            {
-                                string fiLength = (fi.Length / 1024576).ToString();
-                                addToResultsList(filePath, shortFileName, "Extension rule matched (" + interesting + ")", fiLength);
-                                Dispatcher.Invoke((Action)delegate { addLog("Interesting file found - " + shortFileName + " (" + shortFileName + ")"); });
-                                return;
-                            }
-                        }
-                    }
-
-                    //filename.anything
-                    else if (interesting.EndsWith(".*"))
-                    {
-                        string aa = Path.GetFileNameWithoutExtension(lowered);
-                        string bb = interesting.TrimEnd('*').TrimEnd('.');
-                        if (Path.GetFileNameWithoutExtension(lowered) == interesting.TrimEnd('*').TrimEnd('.'))
-                        {
-                            FileInfo fi = new FileInfo(filePath);
-                            if ((MIN_FILE_MODE == false && (fi.Length <= MAX_FILESIZE * 1024)) || (MIN_FILE_MODE == true && (fi.Length >= MIN_FILESIZE * 1048576)))
-                            {
-                                string fiLength = (fi.Length / 1024576).ToString();
-                                addToResultsList(filePath, shortFileName, "Wildcard extension rule matched (" + interesting + ")", fiLength);
-                                Dispatcher.Invoke((Action)delegate { addLog("Interesting file found - " + shortFileName + " (" + shortFileName + ")"); });
-                                return;
-                            }
-                        }
-                    }
-
-                    //regex
-                    else if (interesting.StartsWith("###"))
-                    {
-                        try
-                        {
-                            if (System.Text.RegularExpressions.Regex.IsMatch(shortFileName, interesting.TrimStart('#'), System.Text.RegularExpressions.RegexOptions.IgnoreCase))
-                            {
-                                FileInfo fi = new FileInfo(filePath);
-                                if ((MIN_FILE_MODE == false && (fi.Length <= MAX_FILESIZE * 1024)) || (MIN_FILE_MODE == true && (fi.Length >= MIN_FILESIZE * 1048576)))
-                                {
-                                    string fiLength = (fi.Length / 1024576).ToString();
-                                    addToResultsList(filePath, shortFileName, "Regex matched (" + interesting.TrimStart('#') + ")", fiLength);
-                                    Dispatcher.Invoke((Action)delegate { addLog("Interesting file found - " + shortFileName + " (" + shortFileName + ")"); });
-                                    return;
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            if (logLevel <= LOG_LEVEL.ERROR)
-                            {
-                                Dispatcher.Invoke((Action)delegate { addLog("Regex parsing failed on interesting name comparison, file - " + shortFileName + " regex parsed " + interesting + "(" + ex.Message + ")"); });
-                            }
-                            return;
-                        }
-                    }
-                }
+                string fiLength = (fi.Length / 1024576).ToString();
+                addToResultsList(filePath, shortFileName, fiLength);
+                Dispatcher.Invoke((Action)delegate { addLog("Interesting file found - " + shortFileName); });
+                return;
             }
         }
 

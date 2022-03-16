@@ -73,7 +73,7 @@ namespace WinShareEnum
         {
             persistance.clearInterestingRule();
             lb_interesting.Items.Clear();
-            string[] defaultFilter = { "web.conf", "credentials", "credentials.*", "###\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b", "creds", "creds.*", "shadow", ".bashrc", "secret", "secret.*", "*.pem", "password.*", ".htaccess", "key.*", "privatekey.*", "private_key.*", "global.asax", "pwned.*", "*.key", "*.pkcs12", "*.pfx", "*.p12", "*.crt" };
+            string[] defaultFilter = { "*pwned*", "*creds*", "*shadow*", "*secret*", "*password*", "*key*", "*bashrc*", "*.htaccess", "*.pem", "*.pkcs12", "*.pfx", "*.p12", "*.crt", "global.asax", "web.conf" };
             foreach (string s in defaultFilter)
             {
                 persistance.saveInterestingRule(s);

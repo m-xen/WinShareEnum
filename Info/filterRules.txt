@@ -1,6 +1,0 @@
-keep this private
-keep this secret
-net use
-psexec
-cpassword=
-NVRAM config last updated

@@ -224,8 +224,7 @@
                 <ListView Name="lv_resultsList" ItemContainerStyle="{StaticResource alternatingListViewItemStyle}" AlternationCount="2" Margin="0,4,0,0" >
                     <ListView.View>
                         <GridView x:Name="gvtest">
-                            <GridViewColumn Header="Name" Width="100"  DisplayMemberBinding="{Binding Name}"/>
-                            <GridViewColumn Header="Comment" Width="200" DisplayMemberBinding="{Binding Comment}" />
+                            <GridViewColumn Header="Name" Width="150"  DisplayMemberBinding="{Binding Name}"/>
                             <GridViewColumn Header="Download to Desktop" Width="150"   >
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
@@ -235,7 +234,7 @@
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
                             <GridViewColumn Header="Path" Width="auto"  DisplayMemberBinding="{Binding Path}" />
-                            <GridViewColumn Header="Size (MB)" Width="auto"  DisplayMemberBinding="{Binding Length}" />
+                            <GridViewColumn Header="Size(MB) or Comment" Width="200" DisplayMemberBinding="{Binding Comment}" />
                         </GridView>
                     </ListView.View>
                 </ListView>
@@ -246,7 +245,7 @@
 
 
             <TextBox  Background="#FFF5F5F5" x:Name="tb_SelectedSharePerms" Height="105" Margin="371,101,223,0" TextWrapping="Wrap" Text="Selected Share Permissions..." VerticalAlignment="Top" IsEnabled="False" IsReadOnly="True" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" Grid.Column="1" IsTabStop="False" />
-            <Label x:Name="lbl_fileCount" Content="" HorizontalAlignment="Left"  Height="27" Margin="371,0,0,3" VerticalAlignment="Bottom" Width="128" Grid.Column="1" RenderTransformOrigin="0.5,1.252"/>
+            <Label x:Name="lbl_fileCount" Content="" HorizontalAlignment="Left"  Height="27" Margin="371,0,0,3" VerticalAlignment="Bottom" Width="200" Grid.Column="1" RenderTransformOrigin="0.5,1.252"/>
             <Button x:Name="btn_clearResults" Content="Clear Results" Height="28" Margin="0,0,21,143" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="128"  Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Background="{x:Null}" BorderBrush="LightGray" Opacity="0.8" IsEnabled="True" Grid.Column="1" Click="btn_clearResults_Click" IsTabStop="False" />
             <TextBox ToolTip="Filter results" AcceptsReturn="False" ScrollViewer.VerticalScrollBarVisibility="Auto" x:Name="tbFilter" TextChanged="tbFilter_TextChanged" Margin="0,0,154,143" HorizontalAlignment="Right" Width="450" Height="28" VerticalAlignment="Bottom" BorderBrush="LightGray" Grid.Column="1" IsTabStop="False" />
             <Label x:Name="lblFilter" Content="Filter Results"  Height="28" Margin="0,0,609,143" VerticalAlignment="Bottom" Grid.Column="1" HorizontalAlignment="Right"/>
